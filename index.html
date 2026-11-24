@@ -1,0 +1,2268 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>CubeVisuals</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #09121D;
+            --surface: #111D2A;
+            --surface2: #192838;
+            --line: #ffffff12;
+            --muted: #9BAFC0;
+            --text: #EFF8FF;
+            --accent: #38bdf8;
+            --accent-strong: #0ea5e9
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body, body * {
+            -webkit-user-select: none;
+            user-select: none
+        }
+
+        input, textarea, pre, [contenteditable="true"] {
+            -webkit-user-select: text;
+            user-select: text
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden
+        }
+
+        body {
+            font-family: Inter,"Segoe UI",Arial,sans-serif;
+            color: var(--text);
+            background: radial-gradient(ellipse at 83% -20%,#38bdf81b,transparent 45%),radial-gradient(ellipse at 5% 105%,#0ea5e910,transparent 40%),var(--bg)
+        }
+
+        button, input {
+            font: inherit
+        }
+
+        button {
+            color: inherit
+        }
+
+        .shell {
+            height: 100%;
+            display: flex;
+            flex-direction: column
+        }
+
+        .auth-gate {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: radial-gradient(ellipse at 83% -20%,#38bdf824,transparent 45%),radial-gradient(ellipse at 5% 105%,#0ea5e918,transparent 40%),#09121d
+        }
+
+        .auth-card {
+            width: min(440px,100%);
+            padding: 30px;
+            border: 1px solid #ffffff20;
+            border-radius: 28px;
+            background: linear-gradient(145deg,#17283a,#0d1926);
+            box-shadow: 0 25px 90px #000b
+        }
+
+            .auth-card h1 {
+                margin: 18px 0 8px;
+                font-size: 24px
+            }
+
+            .auth-card p, .auth-card small {
+                color: var(--muted);
+                font-size: 12px;
+                line-height: 1.55
+            }
+
+            .auth-card label {
+                display: block;
+                margin-top: 15px;
+                color: #cbd4cd;
+                font-size: 11px
+            }
+
+            .auth-card input {
+                width: 100%;
+                margin-top: 7px;
+                padding: 13px;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                background: #0b1825;
+                color: white;
+                outline: none
+            }
+
+        .auth-status {
+            min-height: 19px;
+            margin-top: 10px;
+            color: #ffadad !important
+        }
+
+        .auth-switch {
+            border: 0;
+            padding: 8px 0;
+            background: transparent;
+            color: #7dd3fc;
+            cursor: pointer
+        }
+
+        .titlebar {
+            height: 42px;
+            flex: 0 0 42px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 13px 0 19px;
+            background: #09121d;
+            border-bottom: 1px solid var(--line);
+            user-select: none
+        }
+
+        .brand-mini {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .2px
+        }
+
+        .logo {
+            width: 23px;
+            height: 23px;
+            border-radius: 8px;
+            background: linear-gradient(135deg,var(--accent),var(--accent-strong));
+            display: grid;
+            place-items: center;
+            color: #062033;
+            font-weight: 950
+        }
+
+        .window-actions {
+            display: flex;
+            gap: 7px
+        }
+
+        .window-btn {
+            width: 31px;
+            height: 26px;
+            border: 0;
+            border-radius: 8px;
+            background: #ffffff0a;
+            color: #cbd4cd;
+            cursor: pointer
+        }
+
+            .window-btn:hover {
+                background: #ffffff18
+            }
+
+            .window-btn.close:hover {
+                background: #dc4848;
+                color: white
+            }
+
+        .app {
+            display: flex;
+            min-height: 0;
+            flex: 1
+        }
+
+        .sidebar {
+            width: 218px;
+            flex: 0 0 218px;
+            padding: 22px 14px 15px;
+            background: #101613e8;
+            border-right: 1px solid var(--line);
+            display: flex;
+            flex-direction: column
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 9px 29px;
+            font-weight: 850;
+            font-size: 17px
+        }
+
+            .brand .logo {
+                width: 36px;
+                height: 36px;
+                border-radius: 12px;
+                font-size: 19px;
+                box-shadow: 0 7px 28px #38bdf828
+            }
+
+        .nav {
+            display: grid;
+            gap: 6px
+        }
+
+            .nav button {
+                border: 0;
+                background: transparent;
+                color: #aab5ad;
+                text-align: left;
+                padding: 13px 14px;
+                border-radius: 13px;
+                cursor: pointer;
+                font-size: 13px;
+                transition: background .18s,color .18s
+            }
+
+                .nav button:hover {
+                    background: #ffffff09;
+                    color: white
+                }
+
+                .nav button.active {
+                    background: linear-gradient(100deg,#38bdf81b,#0ea5e910);
+                    color: white;
+                    box-shadow: inset 3px 0 var(--accent)
+                }
+
+                .nav button:disabled {
+                    opacity: .4;
+                    cursor: default
+                }
+
+        .side-bottom {
+            margin-top: auto;
+            color: #68746c;
+            font-size: 10px;
+            letter-spacing: 1px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
+
+        .profile-card-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: #ffffff08;
+            text-align: left;
+            cursor: pointer;
+            transition: background .18s ease, border-color .18s ease, transform .18s ease
+        }
+
+            .profile-card-button:hover {
+                background: #ffffff12;
+                border-color: #ffffff30;
+                transform: translateY(-1px)
+            }
+
+        .profile-card-avatar {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            border-radius: 12px;
+            image-rendering: pixelated;
+            background: #252d28
+        }
+
+        .profile-card-copy {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            letter-spacing: 0
+        }
+
+        .profile-card-name {
+            overflow: hidden;
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 750;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .profile-card-hint {
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 500
+        }
+
+        .profile-dialog-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px
+        }
+
+        .profile-dialog-avatar {
+            width: 88px;
+            height: 88px;
+            flex: 0 0 88px;
+            border: 1px solid #ffffff20;
+            border-radius: 20px;
+            image-rendering: pixelated;
+            background: #252d28
+        }
+
+        .profile-dialog-role {
+            display: inline-flex;
+            margin-top: 7px;
+            padding: 5px 9px;
+            border: 1px solid #38bdf840;
+            border-radius: 999px;
+            background: #38bdf812;
+            color: #7dd3fc;
+            font-size: 11px
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            padding: 13px 0;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 12px
+        }
+
+            .profile-details strong {
+                color: var(--text);
+                font-variant-numeric: tabular-nums
+            }
+
+        main {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            padding: 26px 31px 22px
+        }
+
+        .top {
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px
+        }
+
+        .eyebrow {
+            font-size: 10px;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-weight: 800
+        }
+
+        .title {
+            font-size: 25px;
+            letter-spacing: -.6px;
+            margin: 4px 0 0;
+            font-weight: 850
+        }
+
+        .page {
+            display: none;
+            height: calc(100% - 72px);
+            overflow: auto;
+            padding: 0 4px 10px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #414a44 transparent
+        }
+
+            .page.show {
+                display: block
+            }
+
+        .hero {
+            border: 1px solid #38bdf822;
+            background: linear-gradient(112deg,#10243a,#111d2a 72%,#0c2b42);
+            border-radius: 21px;
+            padding: 21px 24px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 18px;
+            min-height: 108px
+        }
+
+            .hero:after {
+                content: 'CV';
+                position: absolute;
+                right: 25px;
+                top: -43px;
+                font-size: 145px;
+                font-weight: 950;
+                color: #ffffff07;
+                letter-spacing: -15px;
+                pointer-events: none
+            }
+
+            .hero h2 {
+                font-size: 19px;
+                margin: 0 0 7px;
+                position: relative;
+                z-index: 1
+            }
+
+            .hero p {
+                color: #aab5ad;
+                font-size: 11px;
+                margin: 0;
+                max-width: 650px;
+                line-height: 1.6;
+                position: relative;
+                z-index: 1
+            }
+
+            .action-btn.close-game {
+                background: linear-gradient(110deg,#ef4444,#dc2626) !important;
+                color: #fff !important;
+                box-shadow: 0 9px 35px #ef444455 !important;
+                border: 0 !important
+            }
+
+            .action-btn.need-account {
+                opacity: .78;
+                filter: saturate(.6)
+            }
+
+        .version-grid {
+            display: grid;
+            grid-template-columns: repeat(3,minmax(0,1fr));
+            gap: 15px
+        }
+
+        .version-tile {
+            min-height: 195px;
+            border: 1px solid var(--line);
+            border-radius: 21px;
+            background: linear-gradient(145deg,#1b2b3c,#111d2a);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            cursor: default
+        }
+
+            .version-tile.available {
+                border-color: #38bdf840;
+                background: linear-gradient(145deg,#15304a,#111d2a);
+                cursor: pointer
+            }
+
+            .version-tile .vnum {
+                font-size: 24px;
+                font-weight: 900;
+                letter-spacing: -.5px
+            }
+
+            .version-tile .vlabel {
+                font-size: 10px;
+                color: var(--muted);
+                margin-top: 5px
+            }
+
+            .version-tile .vstate {
+                font-size: 10px;
+                color: var(--accent-strong)
+            }
+
+            .version-tile.disabled {
+                opacity: .48
+            }
+
+            .version-tile button {
+                border: 1px solid var(--line);
+                background: #ffffff0a;
+                color: #e8eee9;
+                border-radius: 10px;
+                padding: 9px;
+                cursor: pointer;
+                font-size: 10px
+            }
+
+                .version-tile button:disabled {
+                    cursor: not-allowed;
+                    opacity: .55
+                }
+
+        .version-actions {
+            display: flex;
+            gap: 8px
+        }
+
+            .version-actions button {
+                flex: 1
+            }
+
+        .mods-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 13px
+        }
+
+        .search-wrap {
+            height: 42px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 14px;
+            border-radius: 13px;
+            border: 1px solid var(--line);
+            background: #ffffff08
+        }
+
+            .search-wrap span {
+                color: #87928b;
+                font-size: 18px
+            }
+
+            .search-wrap input {
+                width: 100%;
+                border: 0;
+                outline: 0;
+                background: transparent;
+                color: white;
+                font-size: 12px
+            }
+
+                .search-wrap input::placeholder {
+                    color: #78827c
+                }
+
+        .mods-note {
+            font-size: 10px;
+            color: var(--muted);
+            white-space: nowrap
+        }
+
+        .pager {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 12px 0
+        }
+
+            .pager button {
+                width: 34px;
+                height: 31px;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                background: #ffffff0a;
+                cursor: pointer;
+                font-size: 16px
+            }
+
+                .pager button:disabled {
+                    opacity: .3;
+                    cursor: default
+                }
+
+        .page-number {
+            min-width: 80px;
+            text-align: center;
+            color: #bdc7bf;
+            font-size: 11px;
+            font-variant-numeric: tabular-nums
+        }
+
+        .mods-grid {
+            display: grid;
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 13px
+        }
+
+        .mod-card {
+            min-height: 174px;
+            display: flex;
+            gap: 14px;
+            padding: 17px;
+            border: 1px solid var(--line);
+            border-radius: 19px;
+            background: linear-gradient(145deg,#1b2b3c,#111d2a);
+            transition: border-color .2s,transform .2s
+        }
+
+            .mod-card:hover {
+                border-color: #38bdf844;
+                transform: translateY(-2px)
+            }
+
+        .mod-icon {
+            width: 62px;
+            height: 62px;
+            flex: 0 0 62px;
+            border-radius: 16px;
+            object-fit: cover;
+            background: linear-gradient(135deg,#38bdf8,#0ea5e9)
+        }
+
+        .mod-icon-fallback {
+            display: grid;
+            place-items: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 22px
+        }
+
+        .mod-info {
+            min-width: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column
+        }
+
+        .mod-title {
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .mod-author {
+            color: #bdc8c0;
+            font-size: 9px
+        }
+
+        .mod-desc {
+            font-size: 10px;
+            line-height: 1.5;
+            color: #9da8a1;
+            margin-top: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden
+        }
+
+        .mod-meta {
+            display: flex;
+            gap: 9px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: auto;
+            padding-top: 10px;
+            color: #7f8a83;
+            font-size: 9px
+        }
+
+        .download-btn {
+            margin-top: 10px;
+            align-self: flex-start;
+            border: 0;
+            border-radius: 10px;
+            padding: 8px 15px;
+            background: linear-gradient(100deg,var(--accent),#7dd3fc);
+            color: #17130d;
+            font-size: 10px;
+            font-weight: 900;
+            cursor: pointer
+        }
+
+            .download-btn:disabled {
+                opacity: .58;
+                cursor: wait
+            }
+
+            .download-btn.installed {
+                background: #123047;
+                color: #7dd3fc
+            }
+
+        .loading-grid {
+            display: grid;
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 13px
+        }
+
+        .skeleton {
+            height: 154px;
+            border-radius: 19px;
+            background: linear-gradient(100deg,#111d2a 20%,#22364a 40%,#111d2a 60%);
+            background-size: 200% 100%;
+            animation: shimmer 1.3s infinite
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: -200% 0
+            }
+        }
+
+        .empty {
+            padding: 27px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            color: #aab4af;
+            font-size: 12px;
+            background: #ffffff05;
+            text-align: center
+        }
+
+        .retry {
+            margin-top: 12px;
+            border: 0;
+            border-radius: 10px;
+            padding: 9px 14px;
+            background: #ffffff12;
+            cursor: pointer
+        }
+
+        .settings-tabs {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 14px
+        }
+
+            .settings-tabs button {
+                border: 1px solid var(--line);
+                border-radius: 11px;
+                background: #ffffff07;
+                color: #aeb9b1;
+                padding: 9px 13px;
+                font-size: 11px;
+                cursor: pointer
+            }
+
+                .settings-tabs button.active {
+                    background: #38bdf81b;
+                    border-color: #38bdf840;
+                    color: white
+                }
+
+        .settings-panel {
+            display: none
+        }
+
+            .settings-panel.active {
+                display: block
+            }
+
+        .setting-card {
+            border: 1px solid var(--line);
+            background: linear-gradient(145deg,#17283a,#111d2a);
+            border-radius: 17px;
+            padding: 17px 18px;
+            margin-bottom: 11px
+        }
+
+            .setting-card strong {
+                font-size: 12px
+            }
+
+            .setting-card p {
+                color: var(--muted);
+                font-size: 10px;
+                line-height: 1.5;
+                margin: 6px 0 0
+            }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px
+        }
+
+            .setting-row > div {
+                min-width: 0
+            }
+
+        .setting-card input[type=text], .setting-card input[type=number] {
+            margin-top: 10px;
+            background: #0d1926;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            color: white;
+            padding: 10px 12px;
+            width: 100%;
+            outline: 0
+        }
+
+        .setting-card input[type=range] {
+            width: 100%;
+            accent-color: var(--accent);
+            margin-top: 14px
+        }
+
+        .setting-value {
+            color: #7dd3fc;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap
+        }
+
+        .action-btn {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 9px 13px;
+            background: #ffffff0d;
+            color: #fff;
+            cursor: pointer;
+            font-size: 10px;
+            white-space: nowrap
+        }
+
+            .action-btn.primary {
+                background: linear-gradient(100deg,var(--accent),#7dd3fc);
+                border: 0;
+                color: #062033;
+                font-weight: 850
+            }
+
+            .action-btn.danger {
+                background: #522020;
+                border-color: #ef444455;
+                color: #fca5a5
+            }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 9px;
+            border-radius: 20px;
+            background: #123323;
+            color: #70e6ad;
+            font-size: 9px
+        }
+
+        .launch-overlay {
+            position: fixed;
+            inset: 42px 0 0;
+            z-index: 20;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at 50% 30%,#38bdf81c,transparent 42%),#09121df5;
+            backdrop-filter: blur(22px)
+        }
+
+            .launch-overlay.show {
+                display: flex;
+                animation: fadein .25s ease
+            }
+
+        @keyframes fadein {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .launch-panel {
+            width: min(590px,80%);
+            border: 1px solid #ffffff18;
+            border-radius: 26px;
+            padding: 33px;
+            background: linear-gradient(145deg,#1b211e,#121816);
+            box-shadow: 0 25px 100px #0008
+        }
+
+        .launch-brand {
+            font-size: 10px;
+            letter-spacing: 2.2px;
+            color: var(--accent);
+            font-weight: 900
+        }
+
+        .launch-panel h2 {
+            font-size: 24px;
+            margin: 13px 0 8px
+        }
+
+        .launch-sub {
+            font-size: 11px;
+            color: #9ca8a1;
+            line-height: 1.6
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 3px solid #ffffff17;
+            border-top-color: var(--accent);
+            border-right-color: var(--accent-strong);
+            animation: spin .85s linear infinite;
+            margin: 24px 0 18px
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .launch-status {
+            font-size: 12px;
+            color: #e4eae5;
+            margin-bottom: 12px
+        }
+
+        .launch-bar {
+            height: 7px;
+            border-radius: 9px;
+            background: #ffffff13;
+            overflow: hidden
+        }
+
+            .launch-bar span {
+                display: block;
+                height: 100%;
+                width: 0;
+                border-radius: 9px;
+                background: linear-gradient(90deg,var(--accent),var(--accent-strong));
+                transition: width .25s
+            }
+
+        .launch-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px
+        }
+
+        .launch-percent {
+            font-size: 11px;
+            color: #9eaaa2;
+            font-variant-numeric: tabular-nums
+        }
+
+        .cancel-btn {
+            border: 1px solid #ffffff20;
+            border-radius: 10px;
+            background: #ffffff0a;
+            color: #e5ebe6;
+            padding: 9px 16px;
+            font-size: 10px;
+            cursor: pointer
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            transform: translate(-50%,15px);
+            opacity: 0;
+            pointer-events: none;
+            background: #222b25;
+            border: 1px solid #ffffff18;
+            border-radius: 12px;
+            padding: 11px 16px;
+            color: #f0f5f0;
+            font-size: 11px;
+            z-index: 60;
+            transition: .25s;
+            max-width: 80%;
+            text-align: center
+        }
+
+            .toast.show {
+                opacity: 1;
+                transform: translate(-50%,0)
+            }
+
+        .account-grid {
+            display: grid;
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 14px
+        }
+
+        .account-card {
+            border: 1px solid var(--line);
+            border-radius: 19px;
+            padding: 17px;
+            background: linear-gradient(145deg,#1b211e,#141917);
+            display: flex;
+            gap: 14px;
+            align-items: center
+        }
+
+        .account-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            background: #242b26;
+            image-rendering: pixelated;
+            object-fit: cover
+        }
+
+        .account-details {
+            flex: 1;
+            min-width: 0
+        }
+
+            .account-details strong {
+                font-size: 14px
+            }
+
+            .account-details small {
+                display: block;
+                color: var(--muted);
+                margin-top: 5px;
+                font-size: 10px
+            }
+
+        .account-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap
+        }
+
+            .account-actions button {
+                border: 1px solid var(--line);
+                border-radius: 9px;
+                background: #ffffff0b;
+                padding: 7px 9px;
+                font-size: 10px;
+                cursor: pointer
+            }
+
+                .account-actions button.danger {
+                    color: #ff8585
+                }
+
+        .primary-wide {
+            border: 0;
+            border-radius: 13px;
+            background: linear-gradient(110deg,var(--accent),#7dd3fc 58%,var(--accent-strong));
+            color: #151912;
+            font-weight: 850;
+            padding: 12px 17px;
+            cursor: pointer
+        }
+
+        .dialog-backdrop {
+            position: fixed;
+            inset: 42px 0 0;
+            z-index: 50;
+            background: #050806c9;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(12px)
+        }
+
+            .dialog-backdrop.show {
+                display: flex
+            }
+
+        .dialog {
+            width: min(460px,100%);
+            border: 1px solid #ffffff20;
+            border-radius: 22px;
+            padding: 22px;
+            background: #151b17;
+            box-shadow: 0 25px 90px #0009
+        }
+
+            .dialog.wide {
+                width: min(680px,100%)
+            }
+
+            .dialog h3 {
+                margin: 0 0 8px;
+                font-size: 18px
+            }
+
+            .dialog p {
+                color: var(--muted);
+                font-size: 11px;
+                line-height: 1.55
+            }
+
+            .dialog input {
+                width: 100%;
+                padding: 13px;
+                border-radius: 11px;
+                border: 1px solid var(--line);
+                background: #0b100d;
+                color: white;
+                outline: none;
+                margin: 10px 0 15px
+            }
+
+        .dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px
+        }
+
+        .character-layout {
+            display: grid;
+            grid-template-columns: minmax(280px,1fr) minmax(260px,.8fr);
+            gap: 16px
+        }
+
+        .character-stage {
+            min-height: 410px;
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            background: radial-gradient(ellipse at 50% 40%,#26332b,#111713 70%);
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            position: relative
+        }
+
+            .character-stage canvas {
+                max-width: 100%;
+                height: 390px !important
+            }
+
+        .character-tools {
+            display: grid;
+            gap: 12px
+        }
+
+            .character-tools .setting-card {
+                margin: 0
+            }
+
+            .character-tools button {
+                margin-top: 12px
+            }
+
+        .character-caption {
+            position: absolute;
+            bottom: 14px;
+            left: 16px;
+            color: #8d9a91;
+            font-size: 10px
+        }
+
+        /* Меню версии / сборки */
+        .vm-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            padding: 18px 20px;
+            background: linear-gradient(120deg,#1d2621,#141a17);
+            margin-bottom: 14px
+        }
+
+        .vm-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .vm-title {
+            font-size: 18px;
+            font-weight: 850
+        }
+
+        .vm-sub {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 3px
+        }
+
+        .vm-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center
+        }
+
+        .vm-item-list {
+            display: grid;
+            gap: 10px
+        }
+
+        .vm-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: var(--md-surface-container)
+        }
+
+            .vm-item.disabled-item {
+                opacity: .62
+            }
+
+        .vm-item-icon {
+            width: 48px;
+            height: 48px;
+            flex: 0 0 48px;
+            border-radius: 13px;
+            object-fit: cover;
+            background: linear-gradient(135deg,#2a352f,#1b221e);
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            color: #9fb0a5
+        }
+
+        .vm-item-body {
+            flex: 1;
+            min-width: 0
+        }
+
+        .vm-item-title {
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .vm-badge {
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #ffffff12;
+            color: #cbd5ce
+        }
+
+            .vm-badge.off {
+                background: #7f1d1d66;
+                color: #fca5a5
+            }
+
+            .vm-badge.on {
+                background: #123323;
+                color: #70e6ad
+            }
+
+        .vm-item-meta {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 4px;
+            line-height: 1.45
+        }
+
+        .vm-dep-warn {
+            font-size: 10px;
+            color: #fbbf24;
+            margin-top: 5px
+        }
+
+        .vm-item-btns {
+            display: flex;
+            gap: 7px;
+            flex-shrink: 0
+        }
+
+        .log-box {
+            background: #090d0b;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            font-family: Consolas,monospace;
+            font-size: 10.5px;
+            line-height: 1.5;
+            color: #cbd5ce;
+            max-height: 360px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-top: 10px
+        }
+
+        .crash-excerpt {
+            background: #090d0b;
+            border: 1px solid #ef444444;
+            border-radius: 12px;
+            padding: 11px;
+            font-family: Consolas,monospace;
+            font-size: 10px;
+            color: #fecaca;
+            max-height: 170px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 10px 0
+        }
+
+        /* Material You / Material 3 expressive surface system */
+        :root {
+            --md-surface: #151a18;
+            --md-surface-container: #1b211e;
+            --md-surface-high: #242c27;
+            --md-outline: #46524a;
+            --md-primary: #38bdf8;
+            --md-secondary: #8be0b4
+        }
+
+        body {
+            font-family: Roboto,"Segoe UI",Inter,Arial,sans-serif;
+            letter-spacing: .01em
+        }
+
+        .sidebar {
+            background: rgba(18,24,21,.94);
+            backdrop-filter: blur(24px);
+            border-right-color: var(--md-outline)
+        }
+
+        .nav button {
+            border-radius: 999px;
+            padding: 13px 17px;
+            transition: all .24s cubic-bezier(.2,.8,.2,1)
+        }
+
+            .nav button.active {
+                background: color-mix(in srgb,var(--accent) 18%,var(--md-surface-high));
+                box-shadow: none;
+                color: #fff
+            }
+
+        .hero, .version-tile, .setting-card, .account-card, .mod-card, .character-stage {
+            border-radius: 28px;
+            border-color: var(--md-outline);
+            box-shadow: 0 8px 28px #00000018
+        }
+
+        .hero {
+            background: linear-gradient(120deg,color-mix(in srgb,var(--accent) 14%,var(--md-surface-container)),var(--md-surface-container) 60%,color-mix(in srgb,var(--accent-strong) 9%,var(--md-surface-container)))
+        }
+
+        .primary-wide, .action-btn.primary {
+            border-radius: 999px;
+            min-height: 42px;
+            box-shadow: 0 5px 18px #38bdf822;
+            transition: transform .2s,box-shadow .2s
+        }
+
+            .primary-wide:hover, .action-btn.primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 9px 24px #38bdf833
+            }
+
+        .search-wrap, input {
+            border-radius: 999px
+        }
+
+        .account-card, .mod-card {
+            background: var(--md-surface-container);
+            transition: transform .2s,border-color .2s,background .2s
+        }
+
+            .account-card:hover, .mod-card:hover, .version-tile:hover {
+                transform: translateY(-3px);
+                border-color: color-mix(in srgb,var(--accent) 45%,var(--md-outline))
+            }
+
+        .character-caption {
+            font-size: 15px;
+            font-weight: 650
+        }
+
+        .mods-provider {
+            display: flex;
+            gap: 8px;
+            margin: 0 0 12px;
+            flex-wrap: wrap;
+            align-items: center
+        }
+
+        .provider-btn {
+            border: 1px solid var(--md-outline);
+            background: var(--md-surface-container);
+            color: #c8d2ca;
+            border-radius: 999px;
+            padding: 9px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
+            font-size: 11px
+        }
+
+            .provider-btn.active {
+                background: color-mix(in srgb,var(--accent) 22%,var(--md-surface-high));
+                border-color: var(--accent);
+                color: white
+            }
+
+        .account-preview-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0 18px
+        }
+
+            .account-preview-row img {
+                width: 54px;
+                height: 54px;
+                image-rendering: pixelated;
+                border-radius: 15px;
+                background: #252d28
+            }
+
+            .account-preview-row input {
+                flex: 1;
+                min-width: 0;
+                width: auto;
+                margin: 0
+            }
+
+        .account-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px
+        }
+
+        .account-card {
+            min-height: 112px;
+            padding: 20px
+        }
+
+        @media(prefers-reduced-motion:no-preference) {
+            .page.show {
+                animation: mdPageIn .28s cubic-bezier(.2,.8,.2,1)
+            }
+
+            .provider-btn, .nav button {
+                will-change: transform
+            }
+
+            @keyframes mdPageIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(7px)
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0)
+                }
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="css/launcher-theme.css">
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" defer></script>
+</head>
+<body>
+    <div class="auth-gate" id="authGate">
+        <form class="auth-card" id="authForm">
+            <div class="logo">C</div>
+            <h1 id="authTitle">Вход в CubeVisuals</h1>
+            <p id="authDescription">Войдите, чтобы продолжить. Minecraft-профили и игровой ник хранятся отдельно.</p>
+            <label id="authIdentifierLabel">Email или никнейм<input id="authIdentifier" maxlength="254" autocomplete="username" required placeholder="email@example.com или никнейм"></label>
+            <label id="authUsernameLabel" style="display:none">Никнейм CubeVisuals<input id="authUsername" maxlength="16" autocomplete="nickname" placeholder="Например, Matvey987"></label>
+            <label id="authPasswordLabel">Пароль<input id="authPassword" type="password" maxlength="4096" autocomplete="current-password" required></label>
+            <p class="auth-status" id="authStatus" role="status" aria-live="polite"></p>
+            <button class="primary-wide" id="authSubmit" type="submit" style="width:100%">Войти</button>
+            <button class="auth-switch" id="authModeToggle" type="button">Создать аккаунт</button>
+            <small>Пароль не сохраняется лаунчером.</small>
+        </form>
+    </div>
+    <div class="shell" id="appShell" style="display:none">
+        <header class="titlebar" id="titlebar"><div class="brand-mini"><div class="logo">C</div><span>CubeVisuals</span></div><div class="window-actions"><button class="window-btn" title="Свернуть" onclick="host('minimize')">—</button><button class="window-btn close" title="Закрыть" onclick="host('close')">×</button></div></header>
+        <div class="app">
+            <aside class="sidebar"><div class="brand"><div class="logo">C</div><span>CubeVisuals</span></div><nav class="nav"><button class="active" data-page="home">⌂　Главная</button><button data-page="versions">▦　Версии</button><button data-page="mods">◇　Моды</button><button data-page="accounts">♙　Аккаунты</button><button data-page="character">◈　Персонаж</button><button data-page="settings">⚙　Настройки</button></nav><div class="side-bottom"><button class="profile-card-button" id="profileCardButton" type="button" aria-label="Открыть профиль"><img class="profile-card-avatar" id="profileCardAvatar" src="https://mc-heads.net/avatar/Steve/64" alt=""><span class="profile-card-copy"><span class="profile-card-name" id="profileCardName">Профиль</span><span class="profile-card-hint">Открыть профиль　›</span></span></button><span>CUBEVISUALS LAUNCHER · 1.0.3</span></div></aside>
+            <main class="home-active">
+                <div class="top"><div><div class="eyebrow" id="topEyebrow">Minecraft launcher</div><h1 class="title" id="pageTitle">Главная</h1></div><div style="display:flex;align-items:center;gap:12px"></div></div>
+
+                <section class="page show" id="home">
+  <article class="home-banner" id="homeBanner">
+    <video class="home-banner-video" id="homeBannerVideo" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+      <source src="assets/videos/home-banner.mp4" type="video/mp4">
+    </video>
+    <div class="home-banner-shade" aria-hidden="true"></div>
+    <div class="home-banner-copy">
+      <span class="home-banner-kicker">CubeVisuals · Minecraft</span>
+      <h2 class="home-banner-title" id="homeWelcome">Добро пожаловать!</h2>
+      <p class="home-banner-subtitle">Твой мир Minecraft начинается здесь.</p>
+      <span class="home-banner-meta" id="homeAccountLabel">Выбери игровой профиль</span>
+    </div>
+    <button class="home-banner-play" id="homePlayButton" type="button" onclick="handlePlayOrStop()">
+      <span class="play-icon" aria-hidden="true"></span><span id="homePlayLabel">ИГРАТЬ</span>
+    </button>
+    <div class="home-banner-version" id="homeSelectedVersion">Minecraft 1.21.11<small>Fabric · выбранная версия</small></div>
+    <section class="music-player" id="musicPlayer" aria-label="Музыкальный плеер">
+      <div class="music-player-head">
+        <div class="music-cover" aria-hidden="true">♪</div>
+        <div class="music-track">
+          <span class="music-label">Сейчас играет</span>
+          <strong id="musicTitle">Библиотека музыки</strong>
+        </div>
+        <span class="music-bars" id="musicBars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </div>
+      <div class="music-controls">
+        <button class="music-play" id="musicPlay" type="button" aria-label="Воспроизвести" disabled>▶</button>
+        <div class="music-progress-wrap">
+          <input class="music-progress" id="musicProgress" type="range" min="0" max="100" value="0" step="0.1" disabled aria-label="Позиция трека">
+          <div class="music-times"><span id="musicCurrent">0:00</span><span id="musicDuration">0:00</span></div>
+        </div>
+      </div>
+      <label class="music-volume"><span aria-hidden="true">VOL</span><input id="musicVolume" type="range" min="0" max="100" value="70" aria-label="Громкость"></label>
+      <p class="music-status" id="musicStatus" role="status">Загрузка библиотеки…</p>
+      <audio id="musicAudio" preload="metadata"></audio>
+    </section>
+  </article>
+</section>
+
+                <section class="page" id="versions"><div class="hero"><h2>Версии Minecraft</h2><p>Выбери версию для своей игровой сборки. Дважды кликни по версии 1.21.11, чтобы открыть меню сборки (моды, миры, логи и т.д.).</p></div><div class="version-grid"><div class="version-tile disabled"><div><div class="vnum">1.16.5</div><div class="vlabel">Minecraft · Legacy</div></div><div class="vstate" style="color:#858d89">Недоступна</div><button disabled>Недоступна</button></div><div class="version-tile disabled"><div><div class="vnum">1.21.4</div><div class="vlabel">Minecraft · Stable</div></div><div class="vstate" style="color:#858d89">Недоступна</div><button disabled>Недоступна</button></div><div class="version-tile available" ondblclick="openVersionMenu('1.21.11')"><div><div class="vnum">1.21.11</div><div class="vlabel">Minecraft · Fabric<br><small style="color:#70e6ad">Двойной клик — меню сборки</small></div></div><div class="vstate">● Доступна</div><div class="version-actions"><button onclick="event.stopPropagation();selectVersion('1.21.11')">Выбрать</button><button onclick="event.stopPropagation();openVersionMenu('1.21.11')">Меню</button></div></div></div></section>
+
+                <section class="page" id="versionMenu">
+                    <div class="vm-header">
+                        <div class="vm-title-wrap"><button class="action-btn" onclick="switchPage('versions')">← Назад</button><div><div class="vm-title" id="vmTitle">Minecraft 1.21.11 · Fabric</div><div class="vm-sub" id="vmSub">C:\CubeVisuals\game</div></div></div>
+                        <div class="vm-actions"><button class="action-btn primary" id="vmPlayButton" onclick="handlePlayOrStop()">▶　ИГРАТЬ</button><button class="action-btn" onclick="openCatalogFromVersion('mod')">＋ Установить модификации</button><button class="action-btn" onclick="runRepairGame()">🔧 Починить файлы</button><button class="action-btn" onclick="host('openFolder')">📁 Папка</button></div>
+                    </div>
+                    <div class="settings-tabs" id="vmTabs"><button class="active" data-vmtab="mods">Моды</button><button data-vmtab="resourcepacks">Ресурспаки</button><button data-vmtab="shaderpacks">Шейдеры</button><button data-vmtab="worlds">Миры</button><button data-vmtab="servers">Серверы</button><button data-vmtab="datapacks">Датапаки</button><button data-vmtab="logs">Логи</button></div>
+                    <div id="vmContent"></div>
+                </section>
+
+                <section class="page" id="mods">
+                    <div class="hero"><h2>Каталог контента</h2><p>Устанавливай моды, ресурспаки и шейдеры из Modrinth или CurseForge. Все загрузки автоматически подстраиваются под выбранную версию: <strong id="modsTargetVersion">1.21.11</strong>.</p></div>
+                    <div class="mods-provider" role="group" aria-label="Тип контента">
+                        <button class="provider-btn active" data-content="mod">Моды</button><button class="provider-btn" data-content="resourcepack">Ресурспаки</button><button class="provider-btn" data-content="shader">Шейдеры</button>
+                        <span style="flex:1"></span>
+                        <button class="provider-btn active" data-provider="modrinth">Modrinth</button><button class="provider-btn" data-provider="curseforge">CurseForge</button>
+                    </div>
+                    <div class="mods-toolbar"><label class="search-wrap"><span>⌕</span><input id="modSearch" type="search" placeholder="Поиск по названию…" autocomplete="off"></label><span class="mods-note" id="modsCount">Загрузка каталога…</span></div>
+                    <div class="pager" id="pagerTop"><button id="prevTop" aria-label="Предыдущая страница">‹</button><span class="page-number" id="pageTop">Страница 1</span><button id="nextTop" aria-label="Следующая страница">›</button></div>
+                    <div id="modsLoading" class="loading-grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+                    <div class="mods-grid" id="modsGrid"></div><div class="empty" id="modsEmpty" style="display:none"></div>
+                    <div class="pager" id="pagerBottom"><button id="prevBottom" aria-label="Предыдущая страница">‹</button><span class="page-number" id="pageBottom">Страница 1</span><button id="nextBottom" aria-label="Следующая страница">›</button></div>
+                </section>
+
+                <section class="page" id="accounts">
+                    <div class="hero"><h2>Игровые аккаунты</h2><p>Offline или Microsoft Account для запуска Minecraft. CubeVisuals Account остаётся отдельной Firebase-сессией.</p></div>
+                    <div class="setting-row" style="margin-bottom:14px"><span class="mods-note" id="accountCount">0 аккаунтов</span><button class="primary-wide" onclick="openAccountTypeDialog()">＋ Добавить аккаунт</button></div>
+                    <div class="account-grid" id="accountGrid"></div>
+                    <div class="empty" id="accountEmpty">Пока нет игровых аккаунтов. Добавьте Offline или Microsoft аккаунт.</div>
+                </section>
+                <section class="page" id="character"><div class="hero"><h2>Персонаж</h2><p>Настрой внешний вид своего персонажа. Скин и плащ будут использоваться клиентским модом CubeVisuals.</p></div><div class="character-layout"><div class="character-stage"><canvas id="skinCanvas" width="320" height="400"></canvas><div class="character-caption" id="characterCaption">Steve · стандартный скин</div></div><div class="character-tools"><div class="setting-card"><strong>Скин персонажа</strong><p>Загрузи PNG-файл скина Minecraft. Поддерживаются стандартные текстуры 64×64 и 64×32.</p><button class="action-btn primary" onclick="host('chooseSkin')">Выбрать скин</button><p id="skinFileName">Стандартный скин Steve</p></div><div class="setting-card"><strong>Плащ</strong><p>Добавь PNG-текстуру плаща. Для отображения в игре потребуется CubeVisuals с поддержкой кастомных плащей.</p><button class="action-btn" onclick="host('chooseCape')">Выбрать плащ</button><p id="capeFileName">Плащ не выбран</p></div><div class="setting-card"><strong>Управление просмотром</strong><p>Перетаскивай персонажа мышью, чтобы вращать модель.</p><button class="action-btn" onclick="resetCharacter()">Сбросить персонажа</button></div></div></div></section>
+                <section class="page" id="settings">
+                    <div class="hero"><h2>Параметры лаунчера</h2><p>Настрой игровую среду, производительность и расположение файлов.</p></div><div class="settings-tabs"><button class="active" data-settings="game">Игра</button><button data-settings="memory">Память</button><button data-settings="java">Java</button><button data-settings="folders">Папки</button><button data-settings="interface">Интерфейс</button></div>
+                    <div class="settings-panel active" id="settings-game"><div class="setting-card"><strong>Версия игры</strong><p>Текущая игровая версия CubeVisuals.</p><div class="setting-row" style="margin-top:12px"><span>Minecraft 1.21.11 · Fabric</span><span class="status-pill">Доступна</span></div></div><div class="setting-card"><strong>Режим Minecraft-профиля</strong><p>Для оффлайн-запуска используется отдельный локальный игровой ник из раздела «Аккаунты». Он не связан с аккаунтом CubeVisuals.</p></div><div class="setting-card"><strong>Диагностика и восстановление</strong><p>При подготовке игры лаунчер проверяет файлы. Если игра повреждена — запустите полную проверку.</p><button class="action-btn" style="margin-top:10px" onclick="runRepairGame()">Проверить и починить файлы</button></div></div>
+                    <div class="settings-panel" id="settings-memory"><div class="setting-card"><div class="setting-row"><div><strong>Оперативная память для Minecraft</strong><p>Выделяемый объём памяти. Не рекомендуется выделять всю доступную RAM.</p></div><span class="setting-value" id="ramValue">4 ГБ</span></div><input id="ramSlider" type="range" min="2" max="16" step="1" value="4"><div class="setting-row"><span class="sub">2 ГБ</span><span class="sub">16 ГБ</span></div></div><div class="setting-card"><strong>Рекомендация</strong><p>Для игры с несколькими модами обычно достаточно 4–6 ГБ. Для больших сборок может потребоваться больше.</p></div></div>
+                    <div class="settings-panel" id="settings-java"><div class="setting-card"><div class="setting-row"><div><strong>Java Runtime 21</strong><p id="javaStatusText">Проверяем наличие Java…</p></div><span class="status-pill" id="javaStatusPill">Проверка</span></div><button class="action-btn primary" id="javaInstallButton" style="margin-top:13px" onclick="installJava()">Установить Java 21</button><div id="javaProgressWrap" style="display:none;margin-top:14px"><div class="setting-row"><span class="sub" id="javaProgressText">Загрузка…</span><span class="setting-value" id="javaProgressValue">0%</span></div><div class="launch-bar" style="margin-top:8px"><span id="javaProgressBar"></span></div></div></div><div class="setting-card"><strong>Автоматическая установка</strong><p>Если Java 21 отсутствует, лаунчер загрузит и распакует её в локальную папку CubeVisuals без прав администратора.</p></div></div>
+                    <div class="settings-panel" id="settings-folders"><div class="setting-card"><strong>Корневая папка CubeVisuals</strong><p id="rootFolderPath">C:\CubeVisuals</p><div class="setting-row" style="margin-top:12px"><button class="action-btn" onclick="host('openRootFolder')">Открыть CubeVisuals</button></div></div><div class="setting-card"><strong>Игровые файлы Minecraft</strong><p id="gameFolderPath">C:\CubeVisuals\game</p><div class="setting-row" style="margin-top:12px"><button class="action-btn" onclick="host('openFolder')">Открыть папку игры</button></div></div><div class="setting-card"><strong>Java 21</strong><p id="javaFolderPath">C:\CubeVisuals\game\Java</p></div><div class="setting-card"><strong>Данные лаунчера</strong><p id="launcherFolderPath">C:\CubeVisuals\launcher</p><small>Аккаунты, настройки, скины, кэш и данные WebView.</small></div></div>
+                    <div class="settings-panel" id="settings-interface">
+                      <div class="setting-card language-setting">
+                        <div><strong data-i18n="language.title">Язык интерфейса</strong><p data-i18n="language.description">Выберите язык, на котором будет отображаться CubeVisuals Launcher.</p></div>
+                        <select id="languageSelect" class="language-select" aria-label="Язык интерфейса">
+                          <option value="ru">🇷🇺 Русский</option>
+                          <option value="en">🇬🇧 English</option>
+                          <option value="zh-CN">🇨🇳 简体中文</option>
+                          <option value="de">🇩🇪 Deutsch</option>
+                          <option value="es">🇪🇸 Español</option>
+                          <option value="fr">🇫🇷 Français</option>
+                          <option value="pt">🇵🇹 Português</option>
+                          <option value="ja">🇯🇵 日本語</option>
+                          <option value="ko">🇰🇷 한국어</option>
+                          <option value="pl">🇵🇱 Polski</option>
+                        </select>
+                      </div>
+  <p class="appearance-intro">Персонализируй оформление CubeVisuals. Выбор сохраняется для следующих запусков.</p>
+  <div class="appearance-grid" role="group" aria-label="Режим оформления">
+    <button class="appearance-card" type="button" data-theme-choice="dark" aria-pressed="false">
+      <span class="appearance-card-head"><span class="appearance-title"><span class="appearance-icon" aria-hidden="true">◐</span>Тёмная тема</span><span class="appearance-check">✓ Выбрана</span></span>
+      <span class="appearance-preview dark" aria-hidden="true"><span class="appearance-preview-rail"></span><span class="appearance-preview-body"><span class="appearance-preview-tile"></span><span class="appearance-preview-tile"></span></span></span>
+      <span class="appearance-description">Графитовые поверхности, голубые акценты и мягкий Liquid Glass.</span>
+    </button>
+    <button class="appearance-card" type="button" data-theme-choice="light" aria-pressed="false">
+      <span class="appearance-card-head"><span class="appearance-title"><span class="appearance-icon" aria-hidden="true">☼</span>Светлая тема</span><span class="appearance-check">✓ Выбрана</span></span>
+      <span class="appearance-preview light" aria-hidden="true"><span class="appearance-preview-rail"></span><span class="appearance-preview-body"><span class="appearance-preview-tile"></span><span class="appearance-preview-tile"></span></span></span>
+      <span class="appearance-description">Светлый фон и чистые карточки с контрастным текстом.</span>
+    </button>
+    <button class="appearance-card" type="button" data-theme-choice="system" aria-pressed="false">
+      <span class="appearance-card-head"><span class="appearance-title"><span class="appearance-icon" aria-hidden="true">◑</span>Системная тема</span><span class="appearance-check">✓ Выбрана</span></span>
+      <span class="appearance-preview system" aria-hidden="true"><span class="appearance-preview-rail"></span><span class="appearance-preview-body"><span class="appearance-preview-tile"></span><span class="appearance-preview-tile"></span></span></span>
+      <span class="appearance-description">Автоматически следует за оформлением Windows.</span>
+    </button>
+  </div>
+  <div class="accent-section">
+    <div class="accent-section-head"><div><strong>Акцентный цвет</strong><p>Цвет применится ко всем элементам лаунчера.</p></div><span class="accent-current" id="accentCurrent">Голубой</span></div>
+    <div class="accent-grid" role="group" aria-label="Акцентный цвет">
+      <button class="accent-swatch" type="button" data-accent="blue" data-accent-name="Голубой" style="--swatch:#38BDF8" aria-label="Голубой"></button>
+      <button class="accent-swatch" type="button" data-accent="azure" data-accent-name="Синий" style="--swatch:#3B82F6" aria-label="Синий"></button>
+      <button class="accent-swatch" type="button" data-accent="purple" data-accent-name="Фиолетовый" style="--swatch:#A78BFA" aria-label="Фиолетовый"></button>
+      <button class="accent-swatch" type="button" data-accent="pink" data-accent-name="Розовый" style="--swatch:#F472B6" aria-label="Розовый"></button>
+      <button class="accent-swatch" type="button" data-accent="red" data-accent-name="Красный" style="--swatch:#F87171" aria-label="Красный"></button>
+      <button class="accent-swatch" type="button" data-accent="orange" data-accent-name="Оранжевый" style="--swatch:#FB923C" aria-label="Оранжевый"></button>
+      <button class="accent-swatch" type="button" data-accent="green" data-accent-name="Зелёный" style="--swatch:#4ADE80" aria-label="Зелёный"></button>
+      <button class="accent-swatch" type="button" data-accent="teal" data-accent-name="Бирюзовый" style="--swatch:#2DD4BF" aria-label="Бирюзовый"></button>
+      <label class="accent-custom" title="Произвольный цвет"><input id="accentCustom" type="color" value="#38BDF8" aria-label="Произвольный акцентный цвет"><span>Произвольный</span></label>
+    </div>
+  </div>
+</div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div class="dialog-backdrop" id="profileDialog"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="profileDialogTitle"><div class="profile-dialog-head"><img class="profile-dialog-avatar" id="profileDialogAvatar" src="https://mc-heads.net/avatar/Steve/128" alt=""><div><h3 id="profileDialogTitle">Профиль</h3><span class="profile-dialog-role" id="profileRole">Игрок</span></div></div><div class="profile-details"><span>Никнейм</span><strong id="profileUsername">—</strong><span>Номер профиля</span><strong id="profileMemberNumber">—</strong></div><div class="dialog-actions"><button class="action-btn" onclick="closeProfileDialog()">Закрыть</button><button class="action-btn" style="background:#8f3030;color:white;border:0" onclick="host('logoutAccount')">Выйти</button></div></div></div>
+    <div class="dialog-backdrop" id="accountDialog"><div class="dialog"><h3 id="accountDialogTitle">Добавить игровой профиль</h3><p>Укажи отдельный локальный ник для оффлайн-режима Minecraft. Он не является аккаунтом CubeVisuals или Microsoft.</p><div class="account-preview-row"><img id="accountPreviewHead" src="https://mc-heads.net/avatar/Steve/64" alt="Голова игрока"><input id="accountNickInput" maxlength="16" placeholder="Например, Steve" autocomplete="off"></div><div class="dialog-actions"><button class="action-btn" onclick="closeAccountDialog()">Отмена</button><button class="action-btn primary" onclick="confirmAccountDialog()">Сохранить</button></div></div></div>
+    <div class="dialog-backdrop" id="accountTypeDialog">
+        <div class="dialog account-type-dialog">
+            <h3>Добавить игровой аккаунт</h3>
+            <p>Выберите способ входа для запуска Minecraft.</p>
+            <div class="account-type-grid">
+                <button class="account-type-card" type="button" onclick="openOfflineAccountScreen()">
+                    <span class="account-type-icon offline" aria-hidden="true">◉</span>
+                    <strong>Offline Account</strong>
+                    <small>Войти без Microsoft</small>
+                </button>
+                <button class="account-type-card" type="button" onclick="startMicrosoftAccount()">
+                    <span class="account-type-icon microsoft" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span>
+                    </span>
+                    <strong>Microsoft Account</strong>
+                    <small>Войти через Microsoft</small>
+                </button>
+            </div>
+            <div class="dialog-actions"><button class="action-btn" onclick="closeAccountTypeDialog()">Отмена</button></div>
+        </div>
+    </div>
+    <div class="dialog-backdrop" id="deleteDialog"><div class="dialog"><h3>Удалить аккаунт?</h3><p id="deleteAccountText">Аккаунт будет удалён из списка лаунчера.</p><div class="dialog-actions"><button class="action-btn" onclick="closeDeleteDialog()">Отмена</button><button class="action-btn" style="background:#8f3030;color:white;border:0" onclick="confirmDeleteAccount()">Удалить</button></div></div></div>
+    <div class="dialog-backdrop" id="crashDialog"><div class="dialog wide"><h3 id="crashTitle">Minecraft завершился с ошибкой</h3><p id="crashSummary"></p><p id="crashRecommendation" style="color:#f2f5f1"></p><pre class="crash-excerpt" id="crashExcerpt"></pre><div class="dialog-actions"><button class="action-btn" onclick="closeCrashDialog()">Закрыть</button><button class="action-btn" onclick="host('openSubFolder',{folder:'logs'})">Открыть логи</button><button class="action-btn primary" id="crashFixBtn" onclick="executeCrashFix()">Починить</button></div></div></div>
+    <div class="launch-overlay" id="launchOverlay"><div class="launch-panel"><div class="launch-brand">CUBEVISUALS</div><h2 id="launchHeading">Подготавливаем Minecraft</h2><div class="launch-sub">Проверяем Java и игровые файлы. Это может занять несколько минут.</div><div class="spinner" id="launchSpinner"></div><div class="launch-status" id="launchStatus">Подготовка…</div><div class="launch-bar"><span id="launchBar"></span></div><div class="launch-foot"><span class="launch-percent" id="launchPercent">0%</span><button class="cancel-btn" onclick="cancelPlay()">Отмена</button></div></div></div>
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.4.2/bundles/skinview3d.bundle.js"></script>
+    <script>
+        const titles={home:'Главная',versions:'Версии',versionMenu:'Меню сборки',mods:'Моды и дополнения',accounts:'Аккаунты',character:'Персонаж',settings:'Настройки'};
+        let selectedVersion='1.21.11',modsProvider='modrinth',modsContentType='mod',isGameInstalled=false,isGameRunning=false,playBusy=false,modsLoaded=false,modsBusy=false,modsOffset=0,modsTotal=0,modsQuery='',loadedMods=[],searchTimer=null;
+        let instanceData=null,instanceLogs={latestLog:'',launchLog:'',crashReport:''},currentVmTab='mods',activeLogKind='latest',currentDiagnosis=null;
+        function readStoredJson(key,fallback){try{const value=JSON.parse(localStorage.getItem(key)||'null');return value??fallback;}catch{return fallback;}}
+        const savedAccounts=readStoredJson('cv_accounts',[]);
+        let accounts=Array.isArray(savedAccounts)?savedAccounts.filter(a=>a&&typeof a.id==='string'&&typeof a.name==='string'&&/^[A-Za-z0-9_]{3,16}$/.test(a.name)):[],editingAccountId=null,deletingAccountId=null,skinViewer=null,currentSkin=null,currentCape=null,authProfile=null,authMode='login';
+        let minecraftAccounts=[];
+        const pageSize=18;const savedInstalledMods=readStoredJson('cv_installed_mods',[]);const installedMods=new Set(Array.isArray(savedInstalledMods)?savedInstalledMods.filter(x=>typeof x==='string'):[]);
+
+        const supportedLocales=['ru','en','zh-CN','de','es','fr','pt','ja','ko','pl'];
+        const savedLocale=localStorage.getItem('cv_language');
+        let currentLocale=supportedLocales.includes(savedLocale)?savedLocale:'ru';
+        if(currentLocale!==savedLocale)localStorage.setItem('cv_language',currentLocale);
+        let localeStrings={};
+        const localizedNodes=new WeakMap(),localizedAttributes=new WeakMap();
+        function host(action,extra={}){if(window.chrome&&chrome.webview)chrome.webview.postMessage({action,...extra});}
+        function translatePhrase(source){return localeStrings[source]||source;}
+        function translateTextNode(node){
+        const previous=localizedNodes.get(node);
+        const current=node.nodeValue||'';
+        const source=previous&&current===previous.rendered?previous.source:current;
+        if(!source.trim())return;
+        const leading=source.match(/^\s*/)?.[0]||'',trailing=source.match(/\s*$/)?.[0]||'';
+        const content=source.slice(leading.length,source.length-trailing.length);
+        const translated=leading+translatePhrase(content)+trailing;
+        localizedNodes.set(node,{source,rendered:translated});
+        if(current!==translated)node.nodeValue=translated;
+        }
+        function translateElementAttribute(element,name){
+        const previous=localizedAttributes.get(element)?.[name];
+        const current=element.getAttribute(name);
+        if(current===null)return;
+        const source=previous&&current===previous.rendered?previous.source:current;
+        const translated=translatePhrase(source);
+        const values=localizedAttributes.get(element)||{};
+        values[name]={source,rendered:translated};localizedAttributes.set(element,values);
+        if(current!==translated)element.setAttribute(name,translated);
+        }
+        function localizeNode(node){
+        if(node.nodeType===Node.TEXT_NODE){translateTextNode(node);return;}
+        if(node.nodeType!==Node.ELEMENT_NODE)return;
+        const element=node;
+        if(element.matches('script,style'))return;
+        const elements=[element,...element.querySelectorAll('*')];
+        for(const item of elements){
+        if(item.matches('script,style'))continue;
+        if(item.dataset.i18n)item.textContent=localeStrings[item.dataset.i18n]||item.dataset.i18n;
+        for(const name of ['placeholder','title','aria-label','alt'])translateElementAttribute(item,name);
+        }
+        const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
+        while(walker.nextNode())translateTextNode(walker.currentNode);
+        }
+        function applyLocale(locale,translations){
+        currentLocale=supportedLocales.includes(locale)?locale:'ru';
+        localeStrings=translations||{};
+        document.documentElement.lang=currentLocale;
+        document.body.dataset.locale=currentLocale;
+        document.querySelectorAll('[data-i18n]').forEach(element=>{element.textContent=localeStrings[element.dataset.i18n]||element.dataset.i18n;});
+        localizeNode(document.body);
+        const selector=document.getElementById('languageSelect');
+        if(selector)selector.value=currentLocale;
+        }
+        function requestLocale(locale){
+        const selected=supportedLocales.includes(locale)?locale:'ru';
+        localStorage.setItem('cv_language',selected);
+        host('getLocaleResource',{locale:selected});
+        }
+        const languageSelect=document.getElementById('languageSelect');
+        if(languageSelect)languageSelect.addEventListener('change',()=>requestLocale(languageSelect.value));
+        const localizationObserver=new MutationObserver(records=>records.forEach(record=>{
+        if(record.type==='characterData')translateTextNode(record.target);
+        else record.addedNodes.forEach(localizeNode);
+        }));
+        localizationObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
+        host('getLocaleResource',{locale:currentLocale});
+        function setAuthMode(mode){authMode=mode;const registering=mode==='register',completing=mode==='completeProfile';document.getElementById('authTitle').textContent=registering?'Регистрация CubeVisuals':completing?'Завершение регистрации':'Вход в CubeVisuals';document.getElementById('authDescription').textContent=registering?'Создайте аккаунт лаунчера. Игровой Minecraft-профиль добавляется отдельно.':completing?'Аккаунт создан. Выберите никнейм и завершите настройку профиля.':'Войдите, чтобы продолжить. Minecraft-профили и игровой ник хранятся отдельно.';document.getElementById('authIdentifierLabel').style.display=completing?'none':'block';document.getElementById('authIdentifierLabel').firstChild.textContent=registering?'Email':'Email или никнейм';document.getElementById('authIdentifier').placeholder=registering?'email@example.com':'email@example.com или никнейм';document.getElementById('authIdentifier').required=!completing;document.getElementById('authIdentifier').autocomplete=registering?'email':'username';document.getElementById('authUsernameLabel').style.display=registering||completing?'block':'none';document.getElementById('authUsername').required=registering||completing;document.getElementById('authPasswordLabel').style.display=completing?'none':'block';document.getElementById('authPassword').required=!completing;document.getElementById('authPassword').autocomplete=registering?'new-password':'current-password';document.getElementById('authSubmit').textContent=registering?'Создать аккаунт':completing?'Создать профиль':'Войти';document.getElementById('authModeToggle').textContent=completing?'Выйти из аккаунта':registering?'Уже есть аккаунт? Войти':'Создать аккаунт';document.getElementById('authStatus').textContent='';}
+        document.getElementById('authModeToggle').addEventListener('click',()=>{if(authMode==='completeProfile')host('logoutAccount');else setAuthMode(authMode==='login'?'register':'login');});
+        document.getElementById('authForm').addEventListener('submit',e=>{e.preventDefault();const identifier=document.getElementById('authIdentifier').value.trim(),password=document.getElementById('authPassword').value,username=document.getElementById('authUsername').value.trim();document.getElementById('authStatus').textContent='Проверяем данные…';if(authMode==='completeProfile')host('completeProfile',{username});else host(authMode==='register'?'registerAccount':'loginAccount',authMode==='register'?{email:identifier,password,username}:{identifier,password});document.getElementById('authPassword').value='';});
+        function updateWelcome(){const username=typeof authProfile?.username==='string'?authProfile.username.trim():'';document.getElementById('homeWelcome').textContent=username?translatePhrase('Добро пожаловать, {0}!').replace('{0}',username):translatePhrase('Добро пожаловать!');}
+        const homeBanner=document.getElementById('homeBanner'),homeBannerVideo=document.getElementById('homeBannerVideo');
+        if(homeBannerVideo){
+        let bannerFallbackUsed=false;
+        homeBannerVideo.addEventListener('error',()=>{
+        if(!bannerFallbackUsed){bannerFallbackUsed=true;const source=homeBannerVideo.querySelector('source');if(source&&source.src.endsWith('/assets/videos/home-banner.mp4'))source.src='assets/videos/26.2.mp4';homeBannerVideo.load();homeBannerVideo.play().catch(()=>{});}
+        else homeBanner.classList.add('video-unavailable');
+        });
+        homeBannerVideo.addEventListener('ended',()=>{homeBannerVideo.currentTime=0;homeBannerVideo.play().catch(()=>{});});
+        }
+        function restartHomeBannerVideo(){if(!homeBannerVideo||homeBanner.classList.contains('video-unavailable'))return;try{homeBannerVideo.currentTime=0;homeBannerVideo.play().catch(()=>homeBanner.classList.add('video-unavailable'));}catch{homeBanner.classList.add('video-unavailable');}}
+        function profileAvatarUrl(username,size){const safeName=String(username||'Steve').replace(/[^A-Za-z0-9_]/g,'').slice(0,16)||'Steve';return `https://mc-heads.net/avatar/${encodeURIComponent(safeName)}/${size}`;}
+        function setProfileAvatar(elementId,username,size){const image=document.getElementById(elementId);image.onerror=()=>{image.onerror=null;image.src=profileAvatarUrl('Steve',size);};image.src=profileAvatarUrl(username,size);}
+        function updateProfileCard(profile){const username=profile?.username||'Игрок';document.getElementById('profileCardName').textContent=username;document.getElementById('profileUsername').textContent=username;document.getElementById('profileRole').textContent=profile?.role||'Игрок';document.getElementById('profileMemberNumber').textContent=profile?.memberNumber??'—';setProfileAvatar('profileCardAvatar',username,64);setProfileAvatar('profileDialogAvatar',username,128);updateWelcome();}
+        function openProfileDialog(){if(!authProfile)return;updateProfileCard(authProfile);document.getElementById('profileDialog').classList.add('show');}
+        function closeProfileDialog(){document.getElementById('profileDialog').classList.remove('show');}
+        document.getElementById('profileCardButton').addEventListener('click',openProfileDialog);
+        document.getElementById('profileDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)closeProfileDialog();});
+        document.getElementById('titlebar').addEventListener('mousedown',e=>{if(e.target.closest('button'))return;host('dragWindow');});
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAccountDialog();closeDeleteDialog();closeCrashDialog();closeProfileDialog();}});
+
+        function switchPage(pageId){
+        if(playBusy)return;
+        if(!document.getElementById(pageId))return;
+        document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===pageId||(pageId==='versionMenu'&&x.dataset.page==='versions')));
+        document.querySelectorAll('.page').forEach(x=>x.classList.remove('show'));
+        document.getElementById(pageId).classList.add('show');
+        document.querySelector('main').classList.toggle('home-active',pageId==='home');
+        document.getElementById('pageTitle').textContent=titles[pageId]||'CubeVisuals';
+        if(pageId==='home')restartHomeBannerVideo();
+        if(pageId==='mods'&&!modsLoaded)loadMods(true);
+        if(pageId==='accounts')renderAccounts();
+        if(pageId==='character'){if(!activeAccount()){showToast('Сначала создай аккаунт во вкладке «Аккаунты»');switchPage('accounts');return;}initSkinViewer();}
+        if(pageId==='settings')host('getJavaStatus');
+        }
+        document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>switchPage(b.dataset.page)));
+        document.querySelectorAll('.settings-tabs button[data-settings]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.settings-tabs button[data-settings]').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.settings-panel').forEach(x=>x.classList.remove('active'));document.getElementById('settings-'+b.dataset.settings).classList.add('active');if(b.dataset.settings==='java')host('getJavaStatus');}));
+
+        function updatePlayButtons(){
+        const homeBtn=document.getElementById('homePlayButton'),vmBtn=document.getElementById('vmPlayButton'),hasAcc=!!activeAccount();
+        const homeLabel=document.getElementById('homePlayLabel');
+        if(isGameRunning){
+        homeLabel.textContent='ЗАКРЫТЬ ИГРУ';homeBtn.classList.add('close-game');homeBtn.classList.remove('need-account');
+        if(vmBtn){vmBtn.textContent='✕　ЗАКРЫТЬ';vmBtn.classList.add('close-game');vmBtn.classList.remove('need-account');}
+        }else{
+        homeBtn.classList.remove('close-game');
+        homeBtn.classList.toggle('need-account',!hasAcc);
+        homeLabel.textContent=!hasAcc?'ДОБАВИТЬ ИГРОВОЙ ПРОФИЛЬ':'ИГРАТЬ';
+        if(vmBtn){
+        vmBtn.classList.remove('close-game');
+        vmBtn.classList.toggle('need-account',!hasAcc);
+        vmBtn.textContent=!hasAcc?'♙　НУЖЕН АККАУНТ':(isGameInstalled?'▶　ИГРАТЬ':'↓　УСТАНОВИТЬ');
+        }
+        }
+        }
+
+        function selectVersion(v){selectedVersion=v;document.getElementById('homeSelectedVersion').innerHTML='Minecraft '+v+'<small>Fabric · выбранная версия</small>';document.getElementById('modsTargetVersion').textContent=v;showToast('Выбрана Minecraft '+v);}
+        function openVersionMenu(v){selectVersion(v);document.getElementById('vmTitle').textContent='Minecraft '+v+' · Fabric';switchPage('versionMenu');host('getInstanceData',{version:v});host('getInstanceLogs');}
+        function openCatalogFromVersion(contentType){modsContentType=contentType;document.querySelectorAll('.provider-btn[data-content]').forEach(x=>x.classList.toggle('active',x.dataset.content===contentType));switchPage('mods');loadMods(true);}
+
+        function handlePlayOrStop(){
+        if(isGameRunning){host('stopGame');return;}
+        const acc=activeAccount();
+        if(!acc){showToast('Без аккаунта запуск невозможен! Создайте профиль.');switchPage('accounts');return;}
+        if(playBusy)return;
+        playBusy=true;
+        document.getElementById('launchHeading').textContent='Подготавливаем Minecraft';
+        document.getElementById('launchOverlay').classList.add('show');
+        document.querySelectorAll('.nav button').forEach(b=>b.disabled=true);
+        document.getElementById('launchStatus').textContent=isGameInstalled?'Проверяем файлы Minecraft…':'Устанавливаем Minecraft и Fabric…';
+        document.getElementById('launchBar').style.width='0%';
+        document.getElementById('launchPercent').textContent='0%';
+        document.getElementById('launchSpinner').style.display='block';
+        host(isGameInstalled?'play':'install',{version:selectedVersion,username:acc.name,hasAccount:true,ramGb:Number(localStorage.getItem('cv_ram')||4)});
+        }
+        function startPlay(){handlePlayOrStop();}
+        function runRepairGame(){
+        if(playBusy||isGameRunning){showToast('Сначала закрой запущенный Minecraft');return;}
+        playBusy=true;
+        document.getElementById('launchHeading').textContent='Проверка и починка файлов';
+        document.getElementById('launchOverlay').classList.add('show');
+        document.querySelectorAll('.nav button').forEach(b=>b.disabled=true);
+        document.getElementById('launchStatus').textContent='Проверяем SHA-1 всех файлов игры…';
+        document.getElementById('launchBar').style.width='5%';
+        document.getElementById('launchPercent').textContent='5%';
+        document.getElementById('launchSpinner').style.display='block';
+        host('repairGame',{version:selectedVersion});
+        }
+        function cancelPlay(){host('cancelInstall');document.getElementById('launchStatus').textContent='Отменяем операцию…';}
+        function finishPlay(){playBusy=false;document.getElementById('launchOverlay').classList.remove('show');document.querySelectorAll('.nav button').forEach(b=>b.disabled=false);}
+        function showToast(message){const t=document.getElementById('toast');t.textContent=message;t.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove('show'),3800);}
+
+        document.querySelectorAll('#vmTabs button').forEach(b=>b.addEventListener('click',()=>{
+        document.querySelectorAll('#vmTabs button').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');currentVmTab=b.dataset.vmtab;
+        if(currentVmTab==='logs')host('getInstanceLogs');else host('getInstanceData',{version:selectedVersion});
+        renderVmTab();
+        }));
+
+        function renderVmTab(){
+        const root=document.getElementById('vmContent');root.innerHTML='';
+        if(!instanceData&&currentVmTab!=='logs'){root.innerHTML='<div class="empty">Загружаем данные сборки…</div>';return;}
+        if(currentVmTab==='mods'){
+        renderVmToolbar(root,'Папка mods','mods','mod','＋ Установить моды');
+        const mods=instanceData.mods||[];
+        if(!mods.length){root.append(makeEmpty('Установленных модов пока нет. Нажми «Установить моды».'));return;}
+        const list=document.createElement('div');list.className='vm-item-list';
+        for(const m of mods){
+        const card=document.createElement('div');card.className='vm-item'+(m.enabled?'':' disabled-item');
+        const icon=m.iconDataUrl?Object.assign(document.createElement('img'),{className:'vm-item-icon',src:m.iconDataUrl,alt:''}):Object.assign(document.createElement('div'),{className:'vm-item-icon',textContent:(m.name||'M')[0].toUpperCase()});
+        const body=document.createElement('div');body.className='vm-item-body';
+        const title=document.createElement('div');title.className='vm-item-title';
+        const nameSpan=document.createElement('span');nameSpan.textContent=m.name;
+        const verBadge=document.createElement('span');verBadge.className='vm-badge';verBadge.textContent='v'+m.version;
+        const stateBadge=document.createElement('span');stateBadge.className='vm-badge '+(m.enabled?'on':'off');stateBadge.textContent=m.enabled?'Включён':'Выключен (.dis)';
+        title.append(nameSpan,verBadge,stateBadge);
+        const meta=document.createElement('div');meta.className='vm-item-meta';
+        meta.textContent=`Автор: ${m.authors} · Файл: ${m.fileName}`+(m.dependsOn?.length?` · Требует: ${m.dependsOn.join(', ')}`:'');
+        body.append(title,meta);
+        const activeDeps=(m.requiredBy||[]).filter(d=>d.enabled);
+        if(activeDeps.length){const warn=document.createElement('div');warn.className='vm-dep-warn';warn.textContent='⚠ Без этого мода могут сломаться: '+activeDeps.map(d=>d.name).join(', ');body.append(warn);}
+        const btns=document.createElement('div');btns.className='vm-item-btns';
+        const tog=document.createElement('button');tog.className='action-btn';tog.textContent=m.enabled?'Выключить (.dis)':'Включить';
+        tog.onclick=()=>{if(m.enabled&&activeDeps.length&&!confirm(`Мод «${m.name}» нужен для: ${activeDeps.map(d=>d.name).join(', ')}. Выключить всё равно?`))return;host('toggleInstanceItem',{kind:'mod',fileName:m.fileName,version:selectedVersion});};
+        const del=document.createElement('button');del.className='action-btn danger';del.textContent='Удалить';
+        del.onclick=()=>{const msg=activeDeps.length?`Удалить «${m.name}»? Без него могут сломаться: ${activeDeps.map(d=>d.name).join(', ')}.`:`Удалить мод «${m.name}» (${m.fileName})?`;if(confirm(msg))host('deleteInstanceItem',{kind:'mod',fileName:m.fileName,version:selectedVersion});};
+        btns.append(tog,del);card.append(icon,body,btns);list.append(card);
+        }
+        root.append(list);
+        }else if(currentVmTab==='resourcepacks'||currentVmTab==='shaderpacks'){
+        const isRes=currentVmTab==='resourcepacks';
+        renderVmToolbar(root,isRes?'Ресурспаки':'Шейдеры',currentVmTab,isRes?'resourcepack':'shader',isRes?'＋ Установить ресурспаки':'＋ Установить шейдеры');
+        const items=isRes?(instanceData.resourcePacks||[]):(instanceData.shaderPacks||[]);
+        if(!items.length){root.append(makeEmpty(isRes?'Ресурспаки не найдены.':'Шейдеры не найдены.'));return;}
+        const list=document.createElement('div');list.className='vm-item-list';
+        for(const p of items){
+        const card=document.createElement('div');card.className='vm-item'+(p.enabled?'':' disabled-item');
+        const icon=p.iconDataUrl?Object.assign(document.createElement('img'),{className:'vm-item-icon',src:p.iconDataUrl,alt:''}):Object.assign(document.createElement('div'),{className:'vm-item-icon',textContent:isRes?'🎨':'✨'});
+        const body=document.createElement('div');body.className='vm-item-body';
+        const title=document.createElement('div');title.className='vm-item-title';
+        const n=document.createElement('span');n.textContent=p.name;
+        const st=document.createElement('span');st.className='vm-badge '+(p.enabled?'on':'off');st.textContent=p.enabled?'Активен':'Выключен (.dis)';
+        title.append(n,st);
+        const meta=document.createElement('div');meta.className='vm-item-meta';meta.textContent=(p.description?p.description+' · ':'')+p.fileName;
+        body.append(title,meta);
+        const btns=document.createElement('div');btns.className='vm-item-btns';
+        if(!p.isDirectory){const tog=document.createElement('button');tog.className='action-btn';tog.textContent=p.enabled?'Выключить':'Включить';tog.onclick=()=>host('toggleInstanceItem',{kind:isRes?'resourcepack':'shaderpack',fileName:p.fileName,version:selectedVersion});btns.append(tog);}
+        const del=document.createElement('button');del.className='action-btn danger';del.textContent='Удалить';
+        del.onclick=()=>{if(confirm(`Удалить «${p.name}»?`))host('deleteInstanceItem',{kind:isRes?'resourcepack':'shaderpack',fileName:p.fileName,version:selectedVersion});};
+        btns.append(del);card.append(icon,body,btns);list.append(card);
+        }
+        root.append(list);
+        }else if(currentVmTab==='worlds'){
+        renderVmToolbar(root,'Сохранения (saves)','saves',null,null);
+        const worlds=instanceData.worlds||[];
+        if(!worlds.length){root.append(makeEmpty('Миров пока нет. Запусти Minecraft и создай мир.'));return;}
+        const list=document.createElement('div');list.className='vm-item-list';
+        for(const w of worlds){
+        const card=document.createElement('div');card.className='vm-item';
+        const icon=w.iconDataUrl?Object.assign(document.createElement('img'),{className:'vm-item-icon',src:w.iconDataUrl,alt:''}):Object.assign(document.createElement('div'),{className:'vm-item-icon',textContent:'🌍'});
+        const body=document.createElement('div');body.className='vm-item-body';
+        const title=document.createElement('div');title.className='vm-item-title';title.textContent=w.name;
+        const meta=document.createElement('div');meta.className='vm-item-meta';meta.textContent=`Размер: ~${w.sizeMb} МБ · Изменён: ${w.lastPlayed}`;
+        body.append(title,meta);
+        const btns=document.createElement('div');btns.className='vm-item-btns';
+        const del=document.createElement('button');del.className='action-btn danger';del.textContent='Удалить мир';
+        del.onclick=()=>{if(confirm(`Удалить мир «${w.name}» навсегда?`))host('deleteInstanceItem',{kind:'world',fileName:w.folderName,version:selectedVersion});};
+        btns.append(del);card.append(icon,body,btns);list.append(card);
+        }
+        root.append(list);
+        }else if(currentVmTab==='servers'){
+        const servers=instanceData.servers||[];
+        if(!servers.length){root.append(makeEmpty('Список серверов (servers.dat) пока пуст. Добавь сервер в сетевой игре Minecraft.'));return;}
+        const list=document.createElement('div');list.className='vm-item-list';
+        for(const s of servers){
+        const card=document.createElement('div');card.className='vm-item';
+        const icon=s.iconDataUrl?Object.assign(document.createElement('img'),{className:'vm-item-icon',src:s.iconDataUrl,alt:''}):Object.assign(document.createElement('div'),{className:'vm-item-icon',textContent:'🌐'});
+        const body=document.createElement('div');body.className='vm-item-body';
+        const title=document.createElement('div');title.className='vm-item-title';title.textContent=s.name;
+        const meta=document.createElement('div');meta.className='vm-item-meta';meta.textContent='IP: '+s.ip;
+        body.append(title,meta);card.append(icon,body);list.append(card);
+        }
+        root.append(list);
+        }else if(currentVmTab==='datapacks'){
+        const dps=instanceData.datapacks||[];
+        if(!dps.length){root.append(makeEmpty('Датапаков в мирах (saves/*/datapacks) пока нет.'));return;}
+        const list=document.createElement('div');list.className='vm-item-list';
+        for(const d of dps){
+        const card=document.createElement('div');card.className='vm-item'+(d.enabled?'':' disabled-item');
+        const icon=Object.assign(document.createElement('div'),{className:'vm-item-icon',textContent:'📦'});
+        const body=document.createElement('div');body.className='vm-item-body';
+        const title=document.createElement('div');title.className='vm-item-title';
+        const n=document.createElement('span');n.textContent=d.name;
+        const wb=document.createElement('span');wb.className='vm-badge';wb.textContent='Мир: '+d.worldName;
+        title.append(n,wb);
+        const meta=document.createElement('div');meta.className='vm-item-meta';meta.textContent=(d.description?d.description+' · ':'')+d.fileName;
+        body.append(title,meta);
+        const btns=document.createElement('div');btns.className='vm-item-btns';
+        if(!d.isDirectory){const tog=document.createElement('button');tog.className='action-btn';tog.textContent=d.enabled?'Выключить':'Включить';tog.onclick=()=>host('toggleInstanceItem',{kind:'datapack',fileName:d.fileName,worldName:d.worldName,version:selectedVersion});btns.append(tog);}
+        const del=document.createElement('button');del.className='action-btn danger';del.textContent='Удалить';
+        del.onclick=()=>{if(confirm(`Удалить датапак «${d.name}»?`))host('deleteInstanceItem',{kind:'datapack',fileName:d.fileName,worldName:d.worldName,version:selectedVersion});};
+        btns.append(del);card.append(icon,body,btns);list.append(card);
+        }
+        root.append(list);
+        }else if(currentVmTab==='logs'){
+        const bar=document.createElement('div');bar.className='vm-actions';
+        const b1=document.createElement('button');b1.className='action-btn'+(activeLogKind==='latest'?' primary':'');b1.textContent='latest.log (Игра)';b1.onclick=()=>{activeLogKind='latest';renderVmTab();};
+        const b2=document.createElement('button');b2.className='action-btn'+(activeLogKind==='launch'?' primary':'');b2.textContent='last-launch.log (Запуск)';b2.onclick=()=>{activeLogKind='launch';renderVmTab();};
+        const b3=document.createElement('button');b3.className='action-btn'+(activeLogKind==='crash'?' primary':'');b3.textContent='Краш-репорт';b3.onclick=()=>{activeLogKind='crash';renderVmTab();};
+        const ref=document.createElement('button');ref.className='action-btn';ref.textContent='↻ Обновить';ref.onclick=()=>host('getInstanceLogs');
+        const fix=document.createElement('button');fix.className='action-btn primary';fix.textContent='🛠 Проанализировать и починить';fix.onclick=()=>host('analyzeCrash');
+        const fold=document.createElement('button');fold.className='action-btn';fold.textContent='📁 Папка логов';fold.onclick=()=>host('openSubFolder',{folder:'logs'});
+        bar.append(b1,b2,b3,ref,fix,fold);
+        const pre=document.createElement('pre');pre.className='log-box';
+        pre.textContent=activeLogKind==='latest'?(instanceLogs.latestLog||'Лог игры пока пуст.'):activeLogKind==='launch'?(instanceLogs.launchLog||'Лог запуска пока пуст.'):(instanceLogs.crashReport||'Краш-репортов нет.');
+        root.append(bar,pre);
+        }
+        }
+
+        function renderVmToolbar(root,label,folder,catalogType,catalogBtnText){
+        const row=document.createElement('div');row.className='setting-row';row.style.marginBottom='12px';
+        const left=document.createElement('span');left.className='mods-note';left.textContent='Управление: '+label;
+        const right=document.createElement('div');right.className='vm-actions';
+        if(catalogType){const add=document.createElement('button');add.className='action-btn primary';add.textContent=catalogBtnText;add.onclick=()=>openCatalogFromVersion(catalogType);right.append(add);}
+        const open=document.createElement('button');open.className='action-btn';open.textContent='📁 Открыть папку';open.onclick=()=>host('openSubFolder',{folder});
+        const ref=document.createElement('button');ref.className='action-btn';ref.textContent='↻ Обновить';ref.onclick=()=>host('getInstanceData',{version:selectedVersion});
+        right.append(open,ref);row.append(left,right);root.append(row);
+        }
+        function makeEmpty(txt){const d=document.createElement('div');d.className='empty';d.textContent=txt;return d;}
+
+        function showCrashDialog(d){
+        currentDiagnosis=d;
+        document.getElementById('crashTitle').textContent=d.title||'Ошибка запуска Minecraft';
+        document.getElementById('crashSummary').textContent=d.summary||'';
+        document.getElementById('crashRecommendation').textContent='Решение: '+(d.recommendation||'');
+        const ex=document.getElementById('crashExcerpt');ex.textContent=d.logExcerpt||'Подробности отсутствуют в логе.';ex.style.display=d.logExcerpt?'block':'none';
+        const fixBtn=document.getElementById('crashFixBtn');
+        if(d.fixAction&&d.fixButtonText){fixBtn.style.display='';fixBtn.textContent=d.fixButtonText;}else fixBtn.style.display='none';
+        document.getElementById('crashDialog').classList.add('show');
+        }
+        function closeCrashDialog(){document.getElementById('crashDialog').classList.remove('show');}
+        function executeCrashFix(){
+        if(!currentDiagnosis)return;
+        const {fixAction,fixTarget}=currentDiagnosis;closeCrashDialog();
+        if(fixAction==='installModrinthMod'){showToast('Устанавливаем '+fixTarget+'…');host('installModById',{projectId:fixTarget,version:selectedVersion});}
+        else if(fixAction==='disableMod'){host('toggleInstanceItem',{kind:'mod',fileName:fixTarget,version:selectedVersion});showToast('Отключён мод: '+fixTarget);}
+        else if(fixAction==='searchMod'){modsQuery=fixTarget;document.getElementById('modSearch').value=fixTarget;openCatalogFromVersion('mod');}
+        else if(fixAction==='increaseRam'){const val=String(fixTarget||6);localStorage.setItem('cv_ram',val);ramSlider.value=val;document.getElementById('ramValue').textContent=val+' ГБ';showToast('Выделенная память увеличена до '+val+' ГБ');}
+        else if(fixAction==='reinstallJava'){switchPage('settings');document.querySelector('[data-settings=java]').click();installJava();}
+        else if(fixAction==='repairGame'){runRepairGame();}
+        else if(fixAction==='openLogs'){host('openSubFolder',{folder:'logs'});}
+        }
+
+        function loadMods(reset=false){if(modsBusy)return;if(reset){modsOffset=0;modsLoaded=false;}modsBusy=true;document.getElementById('modsLoading').style.display='grid';document.getElementById('modsGrid').innerHTML='';document.getElementById('modsEmpty').style.display='none';document.getElementById('modsCount').textContent='Загружаем…';host('getMods',{version:selectedVersion,query:modsQuery,offset:modsOffset,provider:modsProvider,contentType:modsContentType});}
+        function setPager(){const page=Math.floor(modsOffset/pageSize)+1,totalPages=Math.max(1,Math.ceil(modsTotal/pageSize));['Top','Bottom'].forEach(s=>{document.getElementById('page'+s).textContent='Страница '+page+' / '+totalPages;document.getElementById('prev'+s).disabled=page<=1||modsBusy;document.getElementById('next'+s).disabled=page>=totalPages||modsBusy;});document.getElementById('pagerTop').style.display=modsTotal>pageSize?'flex':'none';document.getElementById('pagerBottom').style.display=modsTotal>pageSize?'flex':'none';}
+        function renderMods(){
+        const grid=document.getElementById('modsGrid');grid.innerHTML='';
+        for(const m of loadedMods){
+        const card=document.createElement('article');card.className='mod-card';
+        const img=document.createElement('img');img.className='mod-icon';img.alt='';
+        if(m.iconUrl){img.src=m.iconUrl;img.onerror=()=>{img.removeAttribute('src');img.classList.add('mod-icon-fallback');img.alt='◇';};}else{img.classList.add('mod-icon-fallback');img.alt='◇';}
+        const info=document.createElement('div');info.className='mod-info';
+        const title=document.createElement('div');title.className='mod-title';title.textContent=m.title;
+        const desc=document.createElement('div');desc.className='mod-desc';desc.textContent=m.description||'Описание отсутствует';
+        const author=document.createElement('div');author.className='mod-author';author.textContent='Автор: '+(m.author||'неизвестен');
+        const meta=document.createElement('div');meta.className='mod-meta';meta.textContent='↓ '+Number(m.downloads||0).toLocaleString('ru-RU')+' загрузок · v'+selectedVersion;
+        const key=modsContentType+':'+m.projectId;
+        const btn=document.createElement('button');btn.className='download-btn';btn.dataset.projectId=m.projectId;
+        if(installedMods.has(key)){btn.textContent='✓ Установлено';btn.classList.add('installed');btn.disabled=true;}
+        else{btn.textContent='↓ Скачать';btn.onclick=()=>downloadMod(m.projectId,btn);}
+        info.append(title,author,desc,meta,btn);card.append(img,info);grid.append(card);
+        }
+        document.getElementById('modsLoading').style.display='none';
+        document.getElementById('modsEmpty').style.display=loadedMods.length?'none':'block';
+        document.getElementById('modsEmpty').textContent=loadedMods.length?'':'Ничего не найдено. Попробуй другой запрос.';
+        document.getElementById('modsCount').textContent=modsTotal.toLocaleString('ru-RU')+' проектов';
+        setPager();
+        }
+        function downloadMod(projectId,button){button.disabled=true;button.textContent='Установка…';host('downloadMod',{projectId,version:selectedVersion,provider:modsProvider,contentType:modsContentType});}
+        document.getElementById('modSearch').addEventListener('input',e=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{modsQuery=e.target.value.trim();loadMods(true);},400);});
+        document.querySelectorAll('.provider-btn[data-content]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.provider-btn[data-content]').forEach(x=>x.classList.toggle('active',x===b));modsContentType=b.dataset.content;document.getElementById('modsEmpty').style.display='none';loadMods(true);}));
+        document.querySelectorAll('.provider-btn[data-provider]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.provider-btn[data-provider]').forEach(x=>x.classList.toggle('active',x===b));modsProvider=b.dataset.provider;document.getElementById('modsEmpty').style.display='none';loadMods(true);}));
+        ['Top','Bottom'].forEach(s=>{document.getElementById('prev'+s).addEventListener('click',()=>{if(modsOffset>=pageSize){modsOffset-=pageSize;loadMods();}});document.getElementById('next'+s).addEventListener('click',()=>{if(modsOffset+pageSize<modsTotal){modsOffset+=pageSize;loadMods();}});});
+
+        function persistAccounts(){localStorage.setItem('cv_accounts',JSON.stringify(accounts));}
+        function activeAccount(){const id=localStorage.getItem('cv_active_account');return accounts.find(a=>a.id===id)||accounts[0]||null;}
+        function renderAccounts(){
+        host('getMinecraftAccounts');
+        }
+        function openAccountTypeDialog(){document.getElementById('accountTypeDialog').classList.add('show');}
+        function closeAccountTypeDialog(){document.getElementById('accountTypeDialog').classList.remove('show');}
+        function openOfflineAccountScreen(){closeAccountTypeDialog();editingAccountId=null;document.getElementById('accountDialogTitle').textContent='Офлайн-аккаунт';document.getElementById('accountNickInput').value='';document.getElementById('accountDialog').classList.add('show');document.getElementById('accountNickInput').focus();updateAccountPreview();}
+        function openAccountDialog(id=null){editingAccountId=id;openOfflineAccountScreen();}
+        function startMicrosoftAccount(){closeAccountTypeDialog();showToast('Открываем Microsoft в браузере…');host('startMicrosoftAccount');}
+        function renderMinecraftAccounts(items){
+        minecraftAccounts=Array.isArray(items)?items:[];
+        const grid=document.getElementById('accountGrid');grid.innerHTML='';
+        document.getElementById('accountCount').textContent=minecraftAccounts.length+' аккаунт(ов)';
+        document.getElementById('accountEmpty').style.display=minecraftAccounts.length?'none':'block';
+        for(const account of minecraftAccounts){
+        const card=document.createElement('article');card.className='account-card';
+        const avatar=document.createElement('img');avatar.className='account-avatar';
+        avatar.src='https://mc-heads.net/avatar/'+encodeURIComponent(account.username||'Steve')+'/64';
+        avatar.onerror=()=>avatar.src='https://mc-heads.net/avatar/Steve/64';
+        const details=document.createElement('div');details.className='account-details';
+        const name=document.createElement('strong');name.textContent=account.username||'—';
+        const sub=document.createElement('small');
+        sub.textContent=(account.active?'Активный · ':'')+(account.type==='microsoft'?'Microsoft Account':'Offline Account');
+        details.append(name,sub);
+        const actions=document.createElement('div');actions.className='account-actions';
+        const select=document.createElement('button');select.textContent=account.active?'Выбран':'Выбрать';select.disabled=!!account.active;select.onclick=()=>host('selectMinecraftAccount',{id:account.id});
+        const del=document.createElement('button');del.className='danger';del.textContent='Удалить';del.onclick=()=>openDeleteMinecraftAccount(account);
+        actions.append(select,del);card.append(avatar,details,actions);grid.append(card);
+        }
+        }
+        function openDeleteMinecraftAccount(account){deletingAccountId=account.id;document.getElementById('deleteAccountText').textContent='Аккаунт «'+account.username+'» будет удалён из лаунчера. Учётная запись Microsoft не удаляется.';document.getElementById('deleteDialog').classList.add('show');}
+        function updateAccountPreview(){const nick=document.getElementById('accountNickInput').value.trim();const img=document.getElementById('accountPreviewHead');img.onerror=()=>{img.onerror=null;img.src='https://mc-heads.net/avatar/Steve/64';};img.src='https://mc-heads.net/avatar/'+encodeURIComponent(/^[A-Za-z0-9_]{3,16}$/.test(nick)?nick:'Steve')+'/64';}
+        document.getElementById('accountNickInput').addEventListener('input',updateAccountPreview);
+        function closeAccountDialog(){document.getElementById('accountDialog').classList.remove('show');editingAccountId=null;}
+        function confirmAccountDialog(){
+        const name=document.getElementById('accountNickInput').value.trim();
+        if(!/^[A-Za-z0-9_]{3,16}$/.test(name)){showToast('Ник должен содержать 3–16 символов: A–Z, 0–9 или _');return;}
+        if(!editingAccountId){host('addOfflineAccount',{username:name});closeAccountDialog();return;}
+        if(accounts.some(a=>a.name.toLowerCase()===name.toLowerCase()&&a.id!==editingAccountId)){showToast('Аккаунт с таким ником уже существует');return;}
+        if(editingAccountId){const a=accounts.find(x=>x.id===editingAccountId);if(a)a.name=name;}
+        else{const id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'cv-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);accounts.push({id,name});localStorage.setItem('cv_active_account',id);}
+        persistAccounts();closeAccountDialog();renderAccounts();showToast('Аккаунт сохранён');
+        }
+        function openDeleteDialog(id){deletingAccountId=id;const a=accounts.find(x=>x.id===id);document.getElementById('deleteAccountText').textContent='Аккаунт «'+(a?.name||'')+'» будет удалён из лаунчера. Это действие нельзя отменить.';document.getElementById('deleteDialog').classList.add('show');}
+        function closeDeleteDialog(){document.getElementById('deleteDialog').classList.remove('show');deletingAccountId=null;}
+        function confirmDeleteAccount(){if(minecraftAccounts.some(a=>a.id===deletingAccountId)){host('removeMinecraftAccount',{id:deletingAccountId});}else{accounts=accounts.filter(a=>a.id!==deletingAccountId);if(localStorage.getItem('cv_active_account')===deletingAccountId)localStorage.removeItem('cv_active_account');persistAccounts();renderAccounts();}closeDeleteDialog();showToast('Аккаунт удалён');}
+        function updateHomeAccount(){
+        const a=activeAccount();
+        host('saveGameProfile',{profileId:a?.id||null,username:a?.name||null});
+        if(a){const saved=localStorage.getItem('cv_skin_'+a.id);if(saved&&saved!==currentSkin){currentSkin=saved;localStorage.setItem('cv_skin_data',saved);if(skinViewer)skinViewer.loadSkin(saved);}}
+        document.getElementById('homeAccountLabel').textContent=a?'Игровой профиль · '+a.name:'Добавь локальный игровой профиль, чтобы играть';
+        document.getElementById('characterCaption').textContent=a?(a.name+' · скин персонажа'):'Steve · стандартный скин';
+        if(a){const skin='https://mc-heads.net/skin/'+encodeURIComponent(a.name);if(skinViewer&&!currentSkin)skinViewer.loadSkin(skin);}
+        updatePlayButtons();
+        }
+        const ramSlider=document.getElementById('ramSlider');const savedRam=Number(localStorage.getItem('cv_ram'));ramSlider.value=String(Number.isFinite(savedRam)&&savedRam>=2&&savedRam<=16?savedRam:4);document.getElementById('ramValue').textContent=ramSlider.value+' ГБ';
+        ramSlider.addEventListener('input',()=>{document.getElementById('ramValue').textContent=ramSlider.value+' ГБ';localStorage.setItem('cv_ram',ramSlider.value);});
+        const accentPresets={
+        blue:{name:'Голубой',base:'#38BDF8',strong:'#0EA5E9',soft:'#7DD3FC'},
+        azure:{name:'Синий',base:'#3B82F6',strong:'#2563EB',soft:'#93C5FD'},
+        purple:{name:'Фиолетовый',base:'#A78BFA',strong:'#7C3AED',soft:'#C4B5FD'},
+        pink:{name:'Розовый',base:'#F472B6',strong:'#DB2777',soft:'#F9A8D4'},
+        red:{name:'Красный',base:'#F87171',strong:'#DC2626',soft:'#FCA5A5'},
+        orange:{name:'Оранжевый',base:'#FB923C',strong:'#EA580C',soft:'#FDBA74'},
+        green:{name:'Зелёный',base:'#4ADE80',strong:'#16A34A',soft:'#86EFAC'},
+        teal:{name:'Бирюзовый',base:'#2DD4BF',strong:'#0D9488',soft:'#99F6E4'}
+        };
+        function hexToRgb(hex){const value=hex.replace('#','');const n=parseInt(value.length===3?value.split('').map(x=>x+x).join(''):value,16);return [(n>>16)&255,(n>>8)&255,n&255];}
+        function setAccent(accentKey,customColor){
+        let preset=accentPresets[accentKey],base,strong,soft,name;
+        if(preset){base=preset.base;strong=preset.strong;soft=preset.soft;name=preset.name;}
+        else if(/^#[0-9a-f]{6}$/i.test(customColor||'')){base=customColor;strong=customColor;soft=customColor;name='Произвольный';}
+        else return;
+        const rgb=hexToRgb(base);
+        document.documentElement.style.setProperty('--accent',base);
+        document.documentElement.style.setProperty('--accent-strong',strong);
+        document.documentElement.style.setProperty('--accent-soft',soft);
+        document.documentElement.style.setProperty('--accent-rgb',rgb.join(','));
+        document.getElementById('accentCurrent').textContent=name;
+        document.querySelectorAll('[data-accent]').forEach(button=>button.classList.toggle('selected',button.dataset.accent===accentKey));
+        if(accentKey==='custom'){document.querySelector('.accent-custom')?.classList.add('selected');}else document.querySelector('.accent-custom')?.classList.remove('selected');
+        localStorage.setItem('cv_accent',accentKey==='custom'?base:accentKey);
+        }
+        document.querySelectorAll('[data-accent]').forEach(button=>button.addEventListener('click',()=>setAccent(button.dataset.accent)));
+        document.getElementById('accentCustom').addEventListener('input',event=>setAccent('custom',event.target.value));
+        const savedAccent=localStorage.getItem('cv_accent')||'blue';
+        if(/^#[0-9a-f]{6}$/i.test(savedAccent)){document.getElementById('accentCustom').value=savedAccent;setAccent('custom',savedAccent);}else setAccent(savedAccent);
+        function setTheme(theme){const allowed=['dark','light','system'];const mode=allowed.includes(theme)?theme:'dark';document.body.dataset.theme=mode;localStorage.setItem('cv_theme',mode);document.querySelectorAll('[data-theme-choice]').forEach(card=>{const selected=card.dataset.themeChoice===mode;card.classList.toggle('selected',selected);card.setAttribute('aria-pressed',String(selected));});}
+        document.querySelectorAll('[data-theme-choice]').forEach(card=>card.addEventListener('click',()=>setTheme(card.dataset.themeChoice)));
+        const savedTheme=localStorage.getItem('cv_theme')||'system';setTheme(savedTheme);
+
+        const musicAudio=document.getElementById('musicAudio');
+        const musicPlay=document.getElementById('musicPlay');
+        const musicProgress=document.getElementById('musicProgress');
+        const musicVolume=document.getElementById('musicVolume');
+        const musicPlayer=document.getElementById('musicPlayer');
+        let musicTracks=[],musicIndex=0;
+        function formatTime(seconds){if(!Number.isFinite(seconds)||seconds<0)return '0:00';const mins=Math.floor(seconds/60),secs=Math.floor(seconds%60);return mins+':'+String(secs).padStart(2,'0');}
+        function setMusicTrack(index){
+        if(!musicTracks.length)return;
+        musicIndex=Math.max(0,Math.min(index,musicTracks.length-1));
+        const track=musicTracks[musicIndex];
+        musicAudio.pause();
+        musicAudio.src=track.src;
+        document.getElementById('musicTitle').textContent=track.title;
+        document.getElementById('musicStatus').textContent='Готово к воспроизведению';
+        musicPlay.disabled=false;
+        musicProgress.disabled=false;
+        musicProgress.value='0';
+        document.getElementById('musicCurrent').textContent='0:00';
+        document.getElementById('musicDuration').textContent='0:00';
+        musicPlayer.classList.remove('playing');
+        musicPlay.textContent='▶';
+        musicPlay.setAttribute('aria-label','Воспроизвести');
+        }
+        musicPlay.addEventListener('click',()=>{
+        if(!musicTracks.length)return;
+        if(musicAudio.paused){musicAudio.play().catch(()=>showToast('Не удалось воспроизвести выбранный трек'));}else musicAudio.pause();
+        });
+        musicProgress.addEventListener('input',()=>{if(Number.isFinite(musicAudio.duration))musicAudio.currentTime=musicAudio.duration*(Number(musicProgress.value)/100);});
+        musicVolume.addEventListener('input',()=>{musicAudio.volume=Number(musicVolume.value)/100;});
+        musicAudio.volume=Number(musicVolume.value)/100;
+        musicAudio.addEventListener('play',()=>{musicPlayer.classList.add('playing');musicPlay.textContent='Ⅱ';musicPlay.setAttribute('aria-label','Пауза');});
+        musicAudio.addEventListener('pause',()=>{musicPlayer.classList.remove('playing');musicPlay.textContent='▶';musicPlay.setAttribute('aria-label','Воспроизвести');});
+        musicAudio.addEventListener('loadedmetadata',()=>document.getElementById('musicDuration').textContent=formatTime(musicAudio.duration));
+        musicAudio.addEventListener('timeupdate',()=>{document.getElementById('musicCurrent').textContent=formatTime(musicAudio.currentTime);if(Number.isFinite(musicAudio.duration)&&musicAudio.duration>0)musicProgress.value=String(musicAudio.currentTime/musicAudio.duration*100);});
+        musicAudio.addEventListener('ended',()=>{
+        musicAudio.pause();
+        musicAudio.currentTime=0;
+        musicProgress.value='0';
+        document.getElementById('musicCurrent').textContent='0:00';
+        musicPlayer.classList.remove('playing');
+        musicPlay.textContent='▶';
+        musicPlay.setAttribute('aria-label','Воспроизвести');
+        document.getElementById('musicStatus').textContent='Воспроизведение завершено';
+        });
+        musicAudio.addEventListener('error',()=>{document.getElementById('musicStatus').textContent='Аудиофайл повреждён или недоступен';showToast('Не удалось загрузить музыкальный трек');musicPlayer.classList.remove('playing');});
+
+        function drawSteveFallback(canvasId){const c=document.getElementById(canvasId);if(!c)return;const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.imageSmoothingEnabled=false;const px=18,ox=70,oy=35;const rect=(a,b,w,h,col)=>{x.fillStyle=col;x.fillRect(ox+a*px,oy+b*px,w*px,h*px);};rect(2,0,4,4,'#b87952');rect(2,0,4,1,'#4a3024');rect(1,2,1,2,'#4a3024');rect(6,2,1,2,'#4a3024');rect(2,2,1,1,'#ffffff');rect(5,2,1,1,'#ffffff');rect(3,3,2,1,'#75402e');rect(2,4,4,4,'#2676b9');rect(1,4,1,4,'#b87952');rect(6,4,1,4,'#b87952');rect(2,8,2,4,'#344b91');rect(4,8,2,4,'#344b91');}
+        function createViewer(canvasId,skin){const canvas=document.getElementById(canvasId);if(!canvas)return null;if(!window.skinview3d){drawSteveFallback(canvasId);return null;}const viewer=new skinview3d.SkinViewer({canvas,width:320,height:400,skin:skin||'https://mc-heads.net/skin/Steve'});viewer.controls.enableRotate=true;viewer.controls.enableZoom=true;viewer.autoRotate=true;return viewer;}
+        function initSkinViewer(){if(!skinViewer){const account=activeAccount();const skin=currentSkin||(account?'https://mc-heads.net/skin/'+encodeURIComponent(account.name):undefined);skinViewer=createViewer('skinCanvas',skin);if(currentCape&&skinViewer)skinViewer.loadCape(currentCape);}else if(currentSkin)skinViewer.loadSkin(currentSkin);}
+        function resetCharacter(){currentSkin=null;currentCape=null;localStorage.removeItem('cv_skin_data');localStorage.removeItem('cv_cape_data');if(skinViewer){skinViewer.loadSkin('https://mc-heads.net/skin/Steve');skinViewer.loadCape(null);}document.getElementById('skinFileName').textContent='Стандартный скин Steve';document.getElementById('capeFileName').textContent='Плащ не выбран';showToast('Персонаж сброшен');}
+        function applySkin(dataUrl,fileName){const probe=new Image();probe.onload=()=>{if(!((probe.width===64&&probe.height===64)||(probe.width===64&&probe.height===32))){showToast('Нужен PNG-скин 64×64 или 64×32');return;}currentSkin=dataUrl;localStorage.setItem('cv_skin_data',dataUrl);if(activeAccount())localStorage.setItem('cv_skin_'+activeAccount().id,dataUrl);document.getElementById('skinFileName').textContent=fileName;if(skinViewer)skinViewer.loadSkin(dataUrl);};probe.onerror=()=>showToast('Не удалось прочитать PNG скина');probe.src=dataUrl;}
+        function applyCape(dataUrl,fileName){currentCape=dataUrl;localStorage.setItem('cv_cape_data',dataUrl);document.getElementById('capeFileName').textContent=fileName;if(skinViewer)skinViewer.loadCape(dataUrl);}
+        currentSkin=localStorage.getItem('cv_skin_data');currentCape=localStorage.getItem('cv_cape_data');
+
+        window.addEventListener('DOMContentLoaded',()=>{
+        if(window.lucide&&typeof window.lucide.createIcons==='function')window.lucide.createIcons({attrs:{'stroke-width':1.8}});
+        if(window.twemoji&&typeof window.twemoji.parse==='function')window.twemoji.parse(document.body,{folder:'svg',ext:'svg',base:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'});
+        });
+
+        function installJava(){const b=document.getElementById('javaInstallButton');b.disabled=true;b.textContent='Установка…';document.getElementById('javaProgressWrap').style.display='block';host('installJava');}
+
+        if(window.chrome&&chrome.webview){
+        chrome.webview.addEventListener('message',e=>{
+        const d=e.data;
+        if(d.type==='localeResource'){
+        if(d.requestedLocale===localStorage.getItem('cv_language'))applyLocale(d.locale,d.translations||{});
+        }else if(d.type==='minecraftAccounts'){
+        renderMinecraftAccounts(d.accounts);
+        }else if(d.type==='minecraftAccountAdded'){
+        if(d.success)showToast(d.account?.type==='microsoft'?'Microsoft-аккаунт успешно добавлен':'Офлайн-аккаунт добавлен');
+        renderAccounts();
+        }else if(d.type==='minecraftAccountAuthError'){
+        showToast(d.message||'Не удалось подключить Microsoft-аккаунт');
+        }else if(d.type==='musicLibrary'){
+        musicTracks=(Array.isArray(d.tracks)?d.tracks:[]).filter(track=>track&&typeof track.title==='string'&&typeof track.src==='string');
+        if(musicTracks.length){setMusicTrack(0);document.getElementById('musicStatus').textContent=d.message||'Музыка готова';}
+        else{document.getElementById('musicTitle').textContent='Нет доступных треков';document.getElementById('musicStatus').textContent=d.message||'Добавьте трек в assets/music/music.json';musicPlay.disabled=true;musicProgress.disabled=true;}
+        }else if(d.type==='authState'){
+        const state=d.state||{};
+        if(state.authenticated&&state.profile){
+        authProfile=state.profile;updateProfileCard(authProfile);document.getElementById('authGate').style.display='none';document.getElementById('appShell').style.display='flex';document.getElementById('authStatus').textContent='';renderAccounts();host('getMusicLibrary');
+        }else{authProfile=null;updateWelcome();document.getElementById('appShell').style.display='none';document.getElementById('authGate').style.display='flex';document.getElementById('profileDialog').classList.remove('show');if(state.profileSetupRequired){setAuthMode('completeProfile');document.getElementById('authStatus').textContent='Профиль не завершён. Укажите никнейм.';}else setAuthMode('login');}
+        if(d.message)showToast(d.message);
+        host('startupRendered');
+        }else if(d.type==='authError'){
+        document.getElementById('authStatus').textContent=(d.message||'Не удалось выполнить вход.').replace(/fi[r]ebase/ig,'сервис входа');
+        }else if(d.type==='moduleToken'){
+        window.dispatchEvent(new CustomEvent('cubevisuals-module-token',{detail:{idToken:d.idToken,expiresAtUtc:d.expiresAtUtc}}));
+        }else if(d.type==='pathsReady'){
+        document.getElementById('rootFolderPath').textContent=d.root;
+        document.getElementById('gameFolderPath').textContent=d.game;
+        document.getElementById('javaFolderPath').textContent=d.java;
+        document.getElementById('launcherFolderPath').textContent=d.launcher;
+        document.getElementById('vmSub').textContent=d.game;
+        }else if(d.type==='gameStatus'){
+        isGameInstalled=!!d.installed;updatePlayButtons();
+        }else if(d.type==='gameProcessState'){
+        isGameRunning=!!d.running;updatePlayButtons();
+        if(!isGameRunning&&d.stoppedByUser)showToast('Minecraft закрыт');
+        }else if(d.type==='gameCrashed'||d.type==='crashAnalysis'){
+        if(d.diagnosis)showCrashDialog(d.diagnosis);
+        }else if(d.type==='instanceData'){
+        instanceData=d.data;renderVmTab();
+        }else if(d.type==='instanceLogs'){
+        instanceLogs={latestLog:d.latestLog||'',launchLog:d.launchLog||'',crashReport:d.crashReport||''};
+        if(currentVmTab==='logs')renderVmTab();
+        }else if(d.type==='quickFixModResult'){
+        if(d.success){installedMods.add('mod:'+d.projectId);localStorage.setItem('cv_installed_mods',JSON.stringify([...installedMods]));}
+        showToast(d.message||'Готово');
+        if(document.getElementById('versionMenu').classList.contains('show'))host('getInstanceData',{version:selectedVersion});
+        }else if(d.type==='repairFinished'){
+        document.getElementById('launchBar').style.width='100%';document.getElementById('launchPercent').textContent='100%';document.getElementById('launchStatus').textContent=d.message;document.getElementById('launchSpinner').style.display='none';
+        if(d.success){isGameInstalled=true;updatePlayButtons();}
+        showToast(d.message);setTimeout(finishPlay,1500);
+        }else if(d.type==='progress'){
+        document.getElementById('launchBar').style.width=d.percent+'%';document.getElementById('launchPercent').textContent=d.percent+'%';document.getElementById('launchStatus').textContent=d.message;
+        }else if(d.type==='installResult'){
+        if(d.success){document.getElementById('launchBar').style.width='100%';document.getElementById('launchPercent').textContent='100%';document.getElementById('launchStatus').textContent=d.message;document.getElementById('launchSpinner').style.display='none';isGameInstalled=true;updatePlayButtons();showToast('Файлы Minecraft проверены.');}
+        else{document.getElementById('launchStatus').textContent=d.message;showToast(d.message);}
+        setTimeout(finishPlay,d.success?2000:1700);
+        }else if(d.type==='launchResult'){
+        if(d.success){document.getElementById('launchBar').style.width='100%';document.getElementById('launchPercent').textContent='100%';document.getElementById('launchStatus').textContent='Minecraft запущен';isGameInstalled=true;isGameRunning=true;updatePlayButtons();showToast('Minecraft запущен!');}
+        else{document.getElementById('launchStatus').textContent=d.message||'Ошибка запуска';showToast(d.message||'Ошибка запуска');}
+        setTimeout(finishPlay,d.success?600:2200);
+        }else if(d.type==='modsLoaded'){
+        modsBusy=false;modsLoaded=true;loadedMods=d.mods||[];modsTotal=d.total||loadedMods.length;modsOffset=d.offset||0;renderMods();
+        }else if(d.type==='modDownloaded'){
+        const button=document.querySelector('.download-btn[data-project-id="'+CSS.escape(d.projectId)+'"]');
+        if(button){button.disabled=!!d.success;button.textContent=d.success?'✓ Установлено':'↓ Скачать';if(d.success)button.classList.add('installed');}
+        if(d.success){installedMods.add((d.contentType||modsContentType)+':'+d.projectId);localStorage.setItem('cv_installed_mods',JSON.stringify([...installedMods]));}
+        else if(button){button.disabled=false;}
+        showToast(d.message||'Загрузка завершена');
+        }else if(d.type==='modsError'||d.type==='hostError'){
+        modsBusy=false;modsLoaded=false;document.getElementById('modsLoading').style.display='none';document.getElementById('modsEmpty').style.display='block';
+        document.getElementById('modsEmpty').textContent='Не удалось загрузить каталог: '+(d.message||'неизвестная ошибка');
+        const retry=document.createElement('button');retry.className='retry';retry.textContent='Повторить';retry.onclick=()=>loadMods(true);
+        document.getElementById('modsEmpty').append(document.createElement('br'),retry);document.getElementById('modsCount').textContent='Ошибка загрузки';setPager();showToast(d.message||'Ошибка');
+        }else if(d.type==='javaStatus'){
+        const installed=d.installed;document.getElementById('javaStatusText').textContent=installed?'Java 21 установлена и готова к работе.':'Java 21 ещё не установлена. Она будет установлена автоматически при первом запуске.';
+        document.getElementById('javaStatusPill').textContent=installed?'Установлена':'Не установлена';document.getElementById('javaInstallButton').textContent=installed?'Проверить Java 21':'Установить Java 21';document.getElementById('javaInstallButton').disabled=false;
+        }else if(d.type==='javaProgress'){
+        document.getElementById('javaProgressText').textContent=d.message;document.getElementById('javaProgressValue').textContent=d.percent+'%';document.getElementById('javaProgressBar').style.width=d.percent+'%';
+        }else if(d.type==='javaInstalled'){
+        document.getElementById('javaStatusText').textContent=d.message;document.getElementById('javaStatusPill').textContent='Установлена';document.getElementById('javaInstallButton').textContent='Проверить Java 21';document.getElementById('javaInstallButton').disabled=false;showToast(d.message);
+        }else if(d.type==='skinSelected'){
+        applySkin(d.dataUrl,d.fileName);showToast('Скин загружен в просмотрщик');
+        }else if(d.type==='capeSelected'){
+        applyCape(d.dataUrl,d.fileName);showToast('Плащ загружен в просмотрщик');
+        }
+        });
+        }
+    </script>
+</body>
+</html>
